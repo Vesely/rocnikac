@@ -1,0 +1,35 @@
+{* {block title}{/block} *}
+{block content}
+	<div class="">
+		<div class="container">
+			<h2>Všechny testy:</h2>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#ID</th>
+						<th>Název testu: </th>
+						<th>Počet pokusů: </th>
+						<th>Počet otázek: </th>
+						<th>Vytvořil: </th>
+					</tr>
+					<tr n:foreach="$tests as $test">
+						<td>{$test->id}</td>
+						<td><a n:href="Test:test id => $test->id">{$test->name}</a></td>
+						<td>{$test->attempts ? $test->attempts : '∞'}</td>
+						<td>{$test->related('questions')->count()}</td>
+						<td>{$test->user->fullname}</td>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+	
+{/block}
+
+
+{block head}
+{/block}

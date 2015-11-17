@@ -1,0 +1,72 @@
+{* {block title}{/block} *}
+{block content}
+	<div class="test-page">
+		<div class="container">
+			<div class="test-box">
+				<h2>{$test->name}</h2>
+				{* <small><em>//Test vytvořil {$test->user->fullname}</em></small> *}
+				{* {control takeTestForm} *}
+				{form takeTestForm}
+					<div class="questions">
+						{foreach $form->groups[questions]->controls as $key => $answer}
+							<div class="form-group shuffle">
+								<label class="label-big">{$answer->caption}</label>
+								{foreach $answer->getItems() as $key => $value}
+									<div class="radio">
+										{$answer->getControlPart($key)}
+
+										{var $label = $answer->getLabelPart($key)}
+										{$label->startTag()|noescape}
+											<span>{$label->getText()|noescape}</span>
+										{$label->endTag()|noescape}
+									</div>
+								{/foreach}
+							</div>
+						{/foreach}
+					</div>
+
+					<div class="form-group">
+						{input submit class => 'btn'}
+					</div>
+
+				{/form}
+			</div>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+	<script>
+		$.fn.shuffle = function() {
+ 
+	        var allElems = this.get(),
+	            getRandom = function(max) {
+	                return Math.floor(Math.random() * max);
+	            },
+	            shuffled = $.map(allElems, function(){
+	                var random = getRandom(allElems.length),
+	                    randEl = $(allElems[random]).clone(true)[0];
+	                allElems.splice(random, 1);
+	                return randEl;
+	           });
+	 
+	        this.each(function(i){
+	            $(this).replaceWith($(shuffled[i]));
+	        });
+	 
+	        return $(shuffled);
+	 
+	    };
+
+	    // $('.shuffle').each(function() {
+	    // 	$(this).find('.radio').shuffle();
+	    // })
+	    
+	    // $('.questions .form-group').shuffle();
+	</script>
+{/block}
+
+
+{block head}
+{/block}

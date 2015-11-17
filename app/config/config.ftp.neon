@@ -1,0 +1,9 @@
+parameters:
+
+
+database:
+	dsn: 'mysql:host=wm37.wedos.net;dbname=d16158_twenty7'
+	user: a16158_twenty7
+	password: 
+	options:
+		lazy: yes

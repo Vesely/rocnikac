@@ -1,0 +1,59 @@
+//Base animation
+.anim() {
+	transition: all .18s ease-in-out;
+}
+.anim{
+	.anim;
+}
+
+
+// Placeholder text
+.placeholder(@color: fade(@black, 50%)) {
+	// Firefox
+	&::-moz-placeholder {
+		color: @color;
+		opacity: 1; // See https://github.com/twbs/bootstrap/pull/11526
+	}
+	&:-ms-input-placeholder { 
+		color: @color; // Internet Explorer 10+
+	} 
+	&::-webkit-input-placeholder  { 
+		color: @color; // Safari and Chrome
+	} 
+}
+
+/* Micro ClearFix Mixin */
+.clearfix() {
+  // zoom: 1;
+  &:before, 
+  &:after { 
+  	content: ""; 
+  	display: table;
+  }
+  &:after { 
+  	clear: both;
+  }
+}
+
+.clearfix {
+  .clearfix();
+}
+
+//Floating
+.pull-left {
+	float: left !important;
+}
+.pull-right {
+	float: right !important;
+}
+
+//Text centering 
+.text-center {
+	text-align: center;
+}
+
+//Half
+.half {
+	float: left;
+	width: 50%;
+}

@@ -1,0 +1,51 @@
+{* {block title}{/block} *}
+{block content}
+	<div class="test-result-page">
+		<div class="container">
+			<div class="test-box">
+			 <h2>Úspěšnost: <em>33%</em></h2>
+				{foreach $answers as $answer}
+					{var $question = $presenter->questions->getQuestion($answer->questionId)}
+					{dump $answer}
+
+					<div class="question">
+						<h3 class="{if $answer->isCorrect}correct{else}incorrect{/if}">
+							<span>{$question->question}</span>
+							<span class="isCorrect">
+								{if $answer->isCorrect}
+									<i class="fa fa-check"></i> <span>Správně</span>
+								{else}
+									<i class="fa fa-times"></i> <span>Špatně</span>
+								{/if}
+							</span>
+						</h3>
+
+						<div class="answers">
+							<div class="answer {if $answer->myAnswer == 'a'}my-answer{/if} {if $answer->correctAnswer == 'a'}correct{/if}">
+								{$question->answer_a}
+							</div>
+							<div class="answer {if $answer->myAnswer == 'b'}my-answer{/if} {if $answer->correctAnswer == 'b'}correct{/if}">
+								{$question->answer_b}
+							</div>
+							<div class="answer {if $answer->myAnswer == 'c'}my-answer{/if} {if $answer->correctAnswer == 'c'}correct{/if}" n:if="!empty($question->answer_c)">
+								{$question->answer_c}
+							</div>
+							<div class="answer {if $answer->myAnswer == 'd'}my-answer{/if} {if $answer->correctAnswer == 'd'}correct{/if}" n:if="!empty($question->answer_d)">
+								{$question->answer_d}
+							</div>
+						</div>
+						
+					</div>
+				{/foreach}
+			</div>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+{/block}
+
+
+{block head}
+{/block}
