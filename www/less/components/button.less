@@ -17,6 +17,11 @@
 	text-decoration: none;
 	display: inline-block;
 
+	.fa {
+		font-size: .9em;
+		margin-right: 3px;
+	}
+
 	a& {
 		text-decoration: none;
 		
@@ -37,6 +42,58 @@
 		&:hover,
 		&:focus {
 			background: darken(#F7F7F7, 8%);
+		}
+	}
+
+	&.btn-small {
+		display: inline-block;
+		padding: 5px 9px;
+		font-size: 10px;
+		font-weight: bold;
+		text-transform: uppercase;
+		margin-right: 5px;
+		white-space: nowrap;
+
+		&:last-of-type {
+			margin-right: 0;
+		}
+
+		span {
+			display: inline-block;
+			vertical-align: 10%;
+		}
+		.fa {
+			margin-right: 3px;
+			font-size: 13px;
+			.fa-pencil-square-o {
+				vertical-align: -1%;
+			}
+		}
+	}
+
+	&.btn-results {
+		background: @purple;
+		&:hover,
+		&:focus {
+			opacity: 1;
+			background: darken(@purple, 11%);	
+		}
+	}
+
+	&.btn-edit {
+		background: @blue;
+		&:hover,
+		&:focus {
+			opacity: 1;
+			background: darken(@blue, 11%);	
+		}
+	}
+	&.btn-remove {
+		background: @red;
+		&:hover,
+		&:focus {
+			opacity: 1;
+			background: darken(@red, 11%);	
 		}
 	}
 

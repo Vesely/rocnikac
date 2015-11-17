@@ -26,6 +26,11 @@ class Tests extends Nette\Object
 		return $this->database->table('tests')->where('del_flag', 0);
 	}
 
+	public function getTestsByUserId($user_id) 
+	{
+		return $this->getTests()->where('user_id', $user_id);
+	}
+
 	public function getTest($id) 
 	{
 		if($id) {

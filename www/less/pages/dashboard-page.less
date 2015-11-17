@@ -3,6 +3,47 @@
 		text-align: center;
 	}
 	.btn-big {
-		margin-top: 40px;
+		margin-top: 50px;
+	}
+	.mytests {
+		margin-top: 50px;
+		h2 {
+			margin-bottom: 5px;
+			padding-bottom: 0;
+			opacity: .75;
+			font-size: 1.1em;
+		}
+		.table {
+			background: @white;
+			border-radius: 4px;
+			thead {
+				tr {
+					th {
+						padding-top: 11px;
+						padding-bottom: 10px;
+						border-color: @gray;
+					}
+				}
+			}
+			.actions-th,
+			.actions {
+				// max-width: 90px;
+				@media (min-width: 900px) {
+					white-space: nowrap;
+					width: 10%;
+				}
+				.btn-small {
+					@media (max-width: @width-sm) {
+						display: block;
+						padding: 6px 10px;
+						width: 100%;
+						margin-bottom: 2px;
+						&:last-of-type {
+							margin-bottom: 0;
+						}
+					}
+				}
+			}
+		}
 	}
 }

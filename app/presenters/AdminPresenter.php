@@ -21,4 +21,9 @@ class AdminPresenter extends BasePresenter
 		// 	$this->redirect('Sign:in');
 		// }
 	}
+
+	public function renderDefault()
+	{
+		$this->template->myTests = $this->tests->getTestsByUserId($this->user->id);
+	}
 }
