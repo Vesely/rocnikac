@@ -8,26 +8,30 @@
 				<ul class=error n:if="$form->ownErrors">
 					<li n:foreach="$form->ownErrors as $error">{$error}</li>
 				</ul>
-				<div class="form-group">
-					{label name /}
-					{input name class => 'form-control', placeholder => 'Napište název testu...'}
-				</div>
-				<div class="form-group">
-					{label attempts /}
-					{input attempts class => 'form-control'}
+				<div class="form-group-row">
+					<div class="form-group form-group-name">
+						{label name /}
+						{input name class => 'form-control form-control-big', placeholder => 'Napište název testu...'}
+					</div>
+					<div class="form-group form-group-attempts">
+						{label attempts /}
+						{input attempts class => 'form-control form-control-big'}
+					</div>
 				</div>
 				{* <h2>Otázky: </h2> *}
 				<div class="questions">
 					{foreach $form['questions']->containers as $id => $question}
 						<div class="question-group">
-							<div class="form-group">
-								{label questions-$id-question class => 'label-big' /}
+							<div class="form-group-row">
+								<div class="form-group form-group-question">
+									{label questions-$id-question class => 'label-big' /}
+									{input questions-$id-question class => 'form-control form-control-big', placeholder => 'Např.: Kdo je zakladatelem Facebooku? '}
+								</div>
+								<div class="form-group form-group-question_img">
+									{label questions-$id-question_img /}
+									{input questions-$id-question_img class => 'form-control-file'}
+								</div>
 								{if $id > 0}{input questions-$id-remove class => 'btn btn-simple btn-remove-question ajax'}{/if}
-								{input questions-$id-question class => 'form-control', placeholder => 'Např.: Kdo je zakladatelem Facebooku? '}
-							</div>
-							<div class="form-group">
-								{label questions-$id-question_img /}
-								{input questions-$id-question_img class => ''}
 							</div>
 							<div class="form-group">
 								{label questions-$id-answer_a /}

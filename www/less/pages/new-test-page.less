@@ -10,10 +10,42 @@
 			margin-top: 0;
 			text-align: center;
 		}
+		.form-group-row {
+			.clearfix;
+			position: relative;
+			.form-group {
+				float: left;
+			}
+			.form-group-name {
+				width: 72%;
+			}
+			.form-group-attempts {
+				width: 25%;
+				margin-left: 3%;
+			}
+
+			.form-group-question {
+				width: 72%;
+			}
+			.form-group-question_img {
+				width: 25%;
+				margin-left: 3%;
+				margin-top: 30px;
+			}
+			.form-control-file {
+				height: 30px;
+				padding-top: 0;
+			}
+		}
 		.question-group {
 			padding-top: 28px;
 			margin-top: 33px;
 			border-top: 1px dotted #dedede;
+			&:first-of-type {
+				border-top: 0;
+				margin-top: 0;
+				padding-top: 20px;
+			}
 		}
 		.btn-add-question {
 			float: right;
@@ -28,6 +60,11 @@
 			position: absolute;
 			right: 0;
 			top: -4px;
+			&:hover, 
+			&:focus {
+				background-color: @red;
+				color: @white;
+			}
 		}
 		.form-submit {
 			border-top: 1px dotted #dedede;
