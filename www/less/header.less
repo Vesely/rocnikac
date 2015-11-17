@@ -8,6 +8,31 @@
 	color: @purple;
 	text-align: center;
 	position: relative;
+	.header-left {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: @header-height;
+		z-index: 12;
+		.goback-btn {
+			.anim;
+			background: @purple;
+			color: @white;
+			height: @header-height;
+			line-height: @header-height;
+			display: block;
+			padding-left: 15px;
+			padding-right: 15px;
+			text-decoration: none;
+			.fa {
+				margin-right: 5px;
+			}
+			&:hover, 
+			&:focus {
+				background: darken(@purple, 10%);
+			}
+		}
+	}
 	.logo {
 		color: @purple;
 		text-transform: uppercase;

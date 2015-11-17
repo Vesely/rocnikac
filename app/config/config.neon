@@ -25,4 +25,5 @@ services:
 	- App\Forms\SignUpFormFactory
 	tests: App\Model\Tests
 	questions: App\Model\Questions
+	testsResults: App\Model\TestResults
 	router: App\RouterFactory::createRouter

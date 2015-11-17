@@ -1,10 +1,32 @@
 {* {block title}{/block} *}
+
+{block header-left}
+	<a n:href="Admin:default" class="goback-btn">
+		<i class="fa fa-arrow-left"></i>
+		<span>Výpis testů</span>
+	</a>
+{/block}
+
 {block content}
 	<div class="attempts-page">
 		<div class="container">
-			<div class="test-box">
-			 	Pokusy testu
-			</div>
+			<h2><small>Název testu: </small>{$test->name}</h2>
+		 	<table class="table">
+				<thead>
+					<tr>
+						<th>#ID</th>
+						<th>Jméno studenta: </th>
+						<th>Procentuální úspěšnost: </th>
+						<th>Čas odeslání: </th>
+					</tr>
+					<tr n:foreach="$testResults as $result">
+						<td>{$result->id}</td>
+						<td>{$result->user->fullname}</td>
+						<td>{$result->percentage}%</td>
+						<td>{$result->ins_dt|date:'H:i - j. m. Y'}</td>
+					</tr>
+				</thead>
+			</table>
 		</div>
 	</div>
 {/block}

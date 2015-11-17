@@ -19,6 +19,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** @inject @var Model\Questions */
     public $questions;
 
+     /** @inject @var Model\TestResults */
+    public $testResults;
+
 
 	public function webalize($string)
 	{

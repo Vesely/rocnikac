@@ -133,7 +133,8 @@ class TestPresenter extends BasePresenter
 			'ins_dt' => new \DateTime
 			);
 
-		$stop();
+		$this->testResults->addTestResult($data);
+		// $stop();
 
 
 		$this->flashMessage('Nový test byl úspěšně odeslán.', 'success');

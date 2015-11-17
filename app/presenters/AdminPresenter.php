@@ -26,4 +26,10 @@ class AdminPresenter extends BasePresenter
 	{
 		$this->template->myTests = $this->tests->getTestsByUserId($this->user->id);
 	}
+
+	public function renderAttempts($id)
+	{
+		$this->template->test = $this->tests->getTest($id);
+		$this->template->testResults = $this->testResults->getTestResultsByTestId($id);
+	}
 }
