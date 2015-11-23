@@ -2,8 +2,8 @@ parameters:
 
 
 database:
-	dsn: 'mysql:host=wm37.wedos.net;dbname=d16158_twenty7'
-	user: a16158_twenty7
-	password: 
+	dsn: 'mysql:host=wm99.wedos.net;dbname=d16158_rocnika'
+	user: a16158_rocnika
+	password: Ufg7HbqQ
 	options:
 		lazy: yes

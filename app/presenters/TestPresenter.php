@@ -59,17 +59,16 @@ class TestPresenter extends BasePresenter
 		$form->addGroup('questions');
 		foreach ($questions as $key => $question) {
 			$questionsGroup = $form->addContainer('group'.$key);
+
+			//Answers
 			$answers = array(
 				'a' => $question->answer_a,
 				'b' => $question->answer_b
 				);
-			if (!empty($question->answer_c)) {
-				$answers['c'] = $question->answer_c;
-			}
-			if (!empty($question->answer_d)) {
-				$answers['d'] = $question->answer_d;
-			}
-			// $stop();
+			if (!empty($question->answer_c)) { $answers['c'] = $question->answer_c; }
+			if (!empty($question->answer_d)) { $answers['d'] = $question->answer_d; }
+			
+			//Answer radio list
 			$questionsGroup->addRadioList('answer'.$key, $question->question, $answers)
 				->setRequired('Vyber odpověď k otázce: '.$question->question);
 		}
@@ -170,6 +169,16 @@ class TestPresenter extends BasePresenter
 		$questions = $form->addDynamic('questions', function (Container $question) use ($invalidateCallback) {
 			$question->addText('question', ($question->name+1).'. Otázka: ');
 			$question->addUpload('question_img', 'Obrázek k otázce:');
+
+			//Answer type
+			$types = array(
+				'radio' => 'Výběr jedné odpovědi',
+				'checkbox' => 'Výber více odpovědí',
+				'text' => 'Textová odpověď'
+				);
+			$question->addRadioList('type', 'Typ odpovědi: ', $types)
+					->setDefaultValue('radio');
+
 			
 			$question->addText('answer_a', 'Odpověď A:')
 					->addConditionOn($question['question'], Form::FILLED)
