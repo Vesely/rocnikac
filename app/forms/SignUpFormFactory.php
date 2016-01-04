@@ -71,9 +71,7 @@ class SignUpFormFactory extends Nette\Object
 		}else{
 			$this->user->login($values->email, $values->password);
 			$this->user->setExpiration('14 days', FALSE);
-			$this->flashMessage('Byl jsi úspěšně přihlášen.', 'success');
 		}
-		// $stop();
 	}
 
 }

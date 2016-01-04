@@ -12,6 +12,7 @@
 							<div class="form-group shuffle">
 								<label class="label-big">{$answer->caption}</label>
 								{foreach $answer->getItems() as $key => $value}
+									
 									<div class="radio">
 										{$answer->getControlPart($key)}
 
@@ -64,6 +65,18 @@
 	    // })
 	    
 	    // $('.questions .form-group').shuffle();
+
+
+		{*// Warning
+		$(window).on('beforeunload', function(){
+			return "Nedokončil jsi test!! I tak chceš odejít? O.o";
+		});
+
+		// Form Submit
+		$(document).on("submit", "form", function(event){
+			// disable warning
+			$(window).off('beforeunload');
+		});*}
 	</script>
 {/block}
 

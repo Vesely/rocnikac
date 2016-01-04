@@ -36,10 +36,50 @@
 				height: 30px;
 				padding-top: 0;
 			}
+
+		}
+		.form-group-correct-answers {
+			.correct-answers-container {
+				border: 1px solid @border-gray;
+				padding-top: 7px;
+				.checkbox {
+					width: 100%;
+					&.disabled {
+						cursor: not-allowed;	
+						input:not(:checked) + label {
+							cursor: not-allowed;	
+							opacity: 0.65;
+							&::before{
+								background-color: @input-bg-disabled;
+								cursor: not-allowed;
+							}
+						}
+					}
+					input:checked + label {
+						span {
+							.anim;
+							color: @green;
+						}
+						&::after {
+							color: @green;
+						}
+					}
+					input[type="checkbox"] {
+						&:focus + label::before{
+							border-color: @green;
+						}
+					}
+				}
+			}
 		}
 		.form-radio {
 			.radio-label {
 				width: 33%;
+				.fa {
+					font-size: 10px;
+					display: inline-block;
+					margin-right: 2px;
+				}
 				&.radio-radio {
 					border-right: 0;
 					border-radius: 4px 0 0 4px;

@@ -9,3 +9,5 @@ app/config/config.local.neon
 node_modules/*
 *.sublime-project
 *.sublime-workspace
+
+sftp-config.json

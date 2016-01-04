@@ -176,16 +176,17 @@ class TestPresenter extends BasePresenter
 				'checkbox' => 'Výber více odpovědí',
 				'text' => 'Textová odpověď'
 				);
-			$question->addRadioList('type', 'Typ odpovědi: ', $types)
-					->setDefaultValue('radio');
+			$question->addRadioList('type', 'Typ odpovědi: ', $types);
+					// ->setDefaultValue('radio');
 
 			
-			$question->addText('answer_a', 'Odpověď A:')
-					->addConditionOn($question['question'], Form::FILLED)
-					->setRequired('Vypňte odpověď A.');
-			$question->addText('answer_b', 'Odpověď B:')
-					->addConditionOn($question['question'], Form::FILLED)
-					->setRequired('Vypňte odpověď B.');
+			//
+			$question->addText('answer_a', 'Odpověď A:');
+					//->addConditionOn($question['question'], Form::FILLED)
+					//->setRequired('Vypňte odpověď A.');
+			$question->addText('answer_b', 'Odpověď B:');
+					//->addConditionOn($question['question'], Form::FILLED)
+					//->setRequired('Vypňte odpověď B.');
 			$question->addText('answer_c', 'Odpověď C:');
 			$question->addText('answer_d', 'Odpověď D:');
 
@@ -195,7 +196,17 @@ class TestPresenter extends BasePresenter
 				'c' => 'Odpověď C',
 				'd' => 'Odpověď D'
 				);
+			
+			//Více správných odpovědí
+			$question->addCheckboxList('correct_answers', 'Správné odpovědi', $correctAnswers);
+
+			//Výběr jedné správné odpovědi
 			$question->addSelect('correct_answer', 'Správná odpověď: ', $correctAnswers);
+
+			
+			//Text answer
+			$question->addText('answer_text', 'Textová odpověď: ');
+
 
 			$question->addSubmit('remove', '× Odstranit otázku')
 				->setValidationScope(FALSE) # disables validation
@@ -247,10 +258,13 @@ class TestPresenter extends BasePresenter
 		$dataTest = array(
 			'name' => $values->name,
 			'attempts' => $attempts,
+			'password' => NULL,
 			'user_id' => $this->user->id,
 			'ins_dt' => new \DateTime
 			);
 
+		//$stop();
+		
 		$test = $this->tests->addTest($dataTest);
 		$testId = $test->id;
 
@@ -262,20 +276,50 @@ class TestPresenter extends BasePresenter
 					'question_img' => NULL,
 					'test_id' => $testId,
 					'user_id' => $this->user->id,
-					'answer_a' => $question->answer_a,
-					'answer_b' => $question->answer_b,
-					'answer_c' => $question->answer_c ? $question->answer_c : NULL,
-					'answer_d' => $question->answer_d ? $question->answer_d : NULL,
-					'correct_answer' => $question->correct_answer,
-					'type' => 'radio',
+					'type' => $question->type,
 					'ins_dt' => new \DateTime
 					);
+
+				//Jedna správná odpověď
+				if ($question->type == 'radio') {
+					$dataQuestion2 = array(
+						'answer_a' => $question->answer_a,
+						'answer_b' => $question->answer_b,
+						'answer_c' => $question->answer_c ? $question->answer_c : NULL,
+						'answer_d' => $question->answer_d ? $question->answer_d : NULL,
+						'correct_answer' => $question->correct_answer
+					);
+					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
+				}
+
+				//Více správných odpověďí
+				if ($question->type == 'checkbox') {
+					//Encode $correctAnswers to JSON
+					$correctAnswersJson = json_encode($question->correct_answers); 
+					$dataQuestion2 = array(
+						'answer_a' => $question->answer_a,
+						'answer_b' => $question->answer_b,
+						'answer_c' => $question->answer_c ? $question->answer_c : NULL,
+						'answer_d' => $question->answer_d ? $question->answer_d : NULL,
+						'correct_answers' => $correctAnswersJson
+					);
+					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
+				}
+
+				//Více správných odpověďí
+				if ($question->type == 'text') {
+					$dataQuestion2 = array(
+						'answer_text' => $question->answer_text
+					);
+					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
+				}
+
 				$question = $this->questions->addQuestion($dataQuestion);
 				// $stop();
 			}
 		}
 
-		$stop();
+		// $stop();
 
 
 		$this->flashMessage('Nový test byl úspěšně vytvořen.', 'success');

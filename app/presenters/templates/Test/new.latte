@@ -33,35 +33,80 @@
 								</div>
 								{if $id > 0}{input questions-$id-remove class => 'btn btn-simple btn-remove-question ajax'}{/if}
 							</div>
-							<div class="form-group form-radio">
+							<div class="form-group form-radio select-answer-type">
 								{* {input questions-$id-type} *}
 								<label>Jaký typ odpovědí?</label>
 								{foreach $form['questions-'.$id.'-type']->items as $key => $label}
 									<input n:name="questions-$id-type:$key">
 									<label n:name="questions-$id-type:$key" class="radio-label radio-{$key}">
-										<span>{$label}</span>
+										<span>
+											<i class="fa fa-dot-circle-o" n:if="$key == 'radio'"></i> 
+											<i class="fa fa-check-square-o" n:if="$key == 'checkbox'"></i> 
+											<i class="fa fa-pencil-square-o" n:if="$key == 'text'"></i> 
+											{* <i class="fa fa-font" n:if="$key == 'text'"></i>  *}
+											{$label}
+										</span>
 									</label>
 								{/foreach}
 							</div>
-							<div class="form-group">
-								{label questions-$id-answer_a /}
-								{input questions-$id-answer_a class => 'form-control form-answer', data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
-							</div>
-							<div class="form-group">
-								{label questions-$id-answer_b /}
-								{input questions-$id-answer_b class => 'form-control form-answer', data-answer => 'b', placeholder => 'Např.: David Veselý'}
-							</div>
-							<div class="form-group">
-								{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
-								{input questions-$id-answer_c class => 'form-control form-answer', data-answer => 'c'}
-							</div>
-							<div class="form-group">
-								{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
-								{input questions-$id-answer_d class => 'form-control form-answer', data-answer => 'd'}
-							</div>
-							<div class="form-group">
-								{label questions-$id-correct_answer /}
-								{input questions-$id-correct_answer class => 'form-control form-correct-answer'}
+							<div class="answer-groups">
+								<div class="answer-group answer-group-radio hidden">
+									<div class="form-group">
+										{label questions-$id-answer_a /}
+										{input questions-$id-answer_a class => 'form-control form-answer', data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_b /}
+										{input questions-$id-answer_b class => 'form-control form-answer', data-answer => 'b', placeholder => 'Např.: David Veselý'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_c class => 'form-control form-answer', data-answer => 'c'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_d class => 'form-control form-answer', data-answer => 'd'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-correct_answer /}
+										{input questions-$id-correct_answer class => 'form-control form-correct-answer'}
+									</div>
+								</div>
+								<div class="answer-group answer-group-checkbox hidden">
+									<div class="form-group">
+										{label questions-$id-answer_a /}
+										{input questions-$id-answer_a class => 'form-control form-answer', data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_b /}
+										{input questions-$id-answer_b class => 'form-control form-answer', data-answer => 'b', placeholder => 'Např.: David Veselý'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_c class => 'form-control form-answer', data-answer => 'c'}
+									</div>
+									<div class="form-group">
+										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_d class => 'form-control form-answer', data-answer => 'd'}
+									</div>
+									<div class="form-group form-group-correct-answers">
+										{* {label questions-$id-correct_answer /} *}
+										{* {input questions-$id-correct_answer class => 'form-control form-correct-answer'} *}
+										<label>Správné odpovědi:</label>
+										<div class="correct-answers-container">
+											{foreach $form['questions-'.$id.'-correct_answers']->items as $key => $label}
+												<div class="checkbox checkbox-{$key}">
+													<input n:name="questions-$id-correct_answers:$key">
+													<label n:name="questions-$id-correct_answers:$key"><span>{$label}</span></label>
+												</div>
+											{/foreach}
+										</div>
+									</div>
+								</div>
+								<div class="answer-group answer-group-text hidden">
+									{label questions-$id-answer_text /}
+									{input questions-$id-answer_text class => 'form-control', placeholder => 'Např.: Steve Jobs'}
+								</div>
 							</div>
 						</div>
 					{/foreach}
@@ -80,7 +125,15 @@
 
 {block scripts}
 {include parent}
-	
+	<script>
+		$('.select-answer-type input').on('change', function(){
+			var value = $(this).val();
+			console.log(value);
+			$('.answer-group').addClass('hidden');
+			$('.answer-group-'+value).removeClass('hidden');
+
+		});
+	</script>
 {/block}
 
 
