@@ -11,17 +11,30 @@
 						{foreach $form->groups[questions]->controls as $key => $answer}
 							<div class="form-group shuffle">
 								<label class="label-big">{$answer->caption}</label>
-								{foreach $answer->getItems() as $key => $value}
-									<div class="radio">
-										{$answer->getControlPart($key)}
+								{dump $answer}
+								
+								{if get_class($answer) == 'Nette\Forms\Controls\TextInput'}
+									{* Textová odpověď *}
+									{input $answer class => 'form-control', placeholder => 'Napište přesnou odpověď..'}
+								{elseif get_class($answer) == 'Nette\Forms\Controls\HiddenField'}
+									{* Hidden input *}
+									{input $answer}
+								{else}
+									{* Radio/checbox *}
+									{foreach $answer->getItems() as $key => $value}
+										{var $type = $answer->getControlPart($key)->attrs['type']}
+										<div class="{$type}">
+											{$answer->getControlPart($key)}
 
-										{var $label = $answer->getLabelPart($key)}
-										{$label->startTag()|noescape}
-											<span>{$label->getText()|noescape}</span>
-										{$label->endTag()|noescape}
-									</div>
-								{/foreach}
+											{var $label = $answer->getLabelPart($key)}
+											{$label->startTag()|noescape}
+												<span>{$label->getText()|noescape}</span>
+											{$label->endTag()|noescape}
+										</div>
+									{/foreach}
+								{/if}
 							</div>
+							
 						{/foreach}
 					</div>
 
@@ -64,6 +77,18 @@
 	    // })
 	    
 	    // $('.questions .form-group').shuffle();
+
+
+		{*// Warning
+		$(window).on('beforeunload', function(){
+			return "Nedokončil jsi test!! I tak chceš odejít? O.o";
+		});
+
+		// Form Submit
+		$(document).on("submit", "form", function(event){
+			// disable warning
+			$(window).off('beforeunload');
+		});*}
 	</script>
 {/block}
 

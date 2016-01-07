@@ -8,7 +8,7 @@
 			</a>
 		</div>
 		<div class="container">
-			<div class="mytests" n:if="!empty($myTests->fetch())">
+			<div class="mytests" n:if="$myTests->count() > 0">
 				<h2>Vytvořené testy: </h2>
 				<table class="table">
 					<thead>

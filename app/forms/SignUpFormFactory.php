@@ -52,7 +52,7 @@ class SignUpFormFactory extends Nette\Object
 			'student' => 'Student',
 			'teacher' => 'Učitel',
 		);
-		$form->addRadioList('role', 'Kdo seš?', $role)
+		$form->addRadioList('role', 'Kdo jsi?', $role)
 			->setDefaultValue('student');
 
 		$form->addSubmit('send', 'Zaregistrovat se');
@@ -71,9 +71,7 @@ class SignUpFormFactory extends Nette\Object
 		}else{
 			$this->user->login($values->email, $values->password);
 			$this->user->setExpiration('14 days', FALSE);
-			$this->flashMessage('Byl jsi úspěšně přihlášen.', 'success');
 		}
-		// $stop();
 	}
 
 }
