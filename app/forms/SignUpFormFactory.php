@@ -52,7 +52,7 @@ class SignUpFormFactory extends Nette\Object
 			'student' => 'Student',
 			'teacher' => 'Učitel',
 		);
-		$form->addRadioList('role', 'Kdo seš?', $role)
+		$form->addRadioList('role', 'Kdo jsi?', $role)
 			->setDefaultValue('student');
 
 		$form->addSubmit('send', 'Zaregistrovat se');

@@ -59,18 +59,44 @@ class TestPresenter extends BasePresenter
 		$form->addGroup('questions');
 		foreach ($questions as $key => $question) {
 			$questionsGroup = $form->addContainer('group'.$key);
+			$type = $question->type;
 
-			//Answers
-			$answers = array(
-				'a' => $question->answer_a,
-				'b' => $question->answer_b
-				);
-			if (!empty($question->answer_c)) { $answers['c'] = $question->answer_c; }
-			if (!empty($question->answer_d)) { $answers['d'] = $question->answer_d; }
-			
-			//Answer radio list
-			$questionsGroup->addRadioList('answer'.$key, $question->question, $answers)
-				->setRequired('Vyber odpověď k otázce: '.$question->question);
+			//Výběr jedné správné odpověďi
+			if($type == 'radio') {
+				//Answers
+				$answers = array(
+					'a' => $question->answer_a,
+					'b' => $question->answer_b
+					);
+				if (!empty($question->answer_c)) { $answers['c'] = $question->answer_c; }
+				if (!empty($question->answer_d)) { $answers['d'] = $question->answer_d; }
+				
+				//Answer radio list
+				$questionsGroup->addRadioList('answer'.$key, $question->question, $answers)
+					->setRequired('Vyber odpověď k otázce: '.$question->question);
+			}
+
+			//Výběr více odpověďí
+			if($type == 'checkbox') {
+				//Answers
+				$answers = array(
+					'a' => $question->answer_a,
+					'b' => $question->answer_b
+					);
+				if (!empty($question->answer_c)) { $answers['c'] = $question->answer_c; }
+				if (!empty($question->answer_d)) { $answers['d'] = $question->answer_d; }
+				
+				//Answer radio list
+				$questionsGroup->addCheckboxList('answer'.$key, $question->question, $answers)
+					->setRequired('Vyber odpověďi k otázce: '.$question->question);
+			}
+
+			//Textová odpověď
+			if($type == 'text') {
+				$questionsGroup->addText('answer'.$key, $question->question)
+					->setRequired('Vyplň odpověď k otázce: '.$question->question);
+			}
+			$questionsGroup->addHidden('answer_type'.$key)->setDefaultValue($type);
 		}
 
 		// $form->addHidden('test_id')->setDefaultValue($testId);
@@ -99,23 +125,35 @@ class TestPresenter extends BasePresenter
 		foreach ($questions as $key => $question) {
 			//Vyplňená odpověď
 			$answer = $form->values['group'.$key]['answer'.$key];
-			
+			$answerType = $form->values['group'.$key]['answer_type'.$key];
+
 			//Je odpověď správně? (true X false)
-			$isAnswerCorrect = ($question->correct_answer == $answer);
-			
+			$correctAnswer = NULL;
+			if ($answerType == 'radio') {
+				$correctAnswer = $question->correct_answer;
+			}elseif($answerType == 'checkbox') {
+				$correctAnswer = json_decode($question->correct_answers);
+			}elseif($answerType == 'text') {
+				$correctAnswer = $question->answer_text;
+				//similar_text($question->answer_text, $answer, $percentageTextSimillar);
+			}
+			$isAnswerCorrect = ($correctAnswer == $answer);
+
 			//Soupis data z odpověďi
 			$answers[$key] = array(
 				'isCorrect' => $isAnswerCorrect,
 				// 'question' => $question->question,
 				'questionId' => $question->id,
 				'myAnswer' => $answer,
-				'correctAnswer' => $question->correct_answer
+				'correctAnswer' => $correctAnswer,
+				'answer_type' => $answerType
 				);
 
 			//Pokud je odpověď správná, inkrementuj počet správných
 			if($isAnswerCorrect == true) {
 				$correctAnswersCount = $correctAnswersCount+1;
 			}
+
 		}
 		
 		//Spočítej procentuální úšpěšnost
@@ -132,6 +170,7 @@ class TestPresenter extends BasePresenter
 			'ins_dt' => new \DateTime
 			);
 
+		//Zapiš nově provedený test do DB
 		$this->testResults->addTestResult($data);
 		// $stop();
 
@@ -203,7 +242,6 @@ class TestPresenter extends BasePresenter
 			//Výběr jedné správné odpovědi
 			$question->addSelect('correct_answer', 'Správná odpověď: ', $correctAnswers);
 
-			
 			//Text answer
 			$question->addText('answer_text', 'Textová odpověď: ');
 
@@ -267,9 +305,9 @@ class TestPresenter extends BasePresenter
 		
 		$test = $this->tests->addTest($dataTest);
 		$testId = $test->id;
-
+		// $testId = 8; //only for testing
 		foreach ($form['questions']->values as $question) {
-			if(!empty($question->question) && !empty($question->answer_a) && !empty($question->answer_b)) {
+			if(!empty($question->question) && ( (!empty($question->answer_a) && !empty($question->answer_b) ) || !empty($question->answer_text)) ) {
 
 				$dataQuestion = array(
 					'question' => $question->question,
@@ -306,7 +344,7 @@ class TestPresenter extends BasePresenter
 					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
 				}
 
-				//Více správných odpověďí
+				//Textová odpověď
 				if ($question->type == 'text') {
 					$dataQuestion2 = array(
 						'answer_text' => $question->answer_text
@@ -314,7 +352,8 @@ class TestPresenter extends BasePresenter
 					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
 				}
 
-				$question = $this->questions->addQuestion($dataQuestion);
+				//Vložení otázky do DB
+				$new_question = $this->questions->addQuestion($dataQuestion);
 				// $stop();
 			}
 		}

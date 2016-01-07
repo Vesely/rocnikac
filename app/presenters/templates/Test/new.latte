@@ -37,13 +37,12 @@
 								{* {input questions-$id-type} *}
 								<label>Jaký typ odpovědí?</label>
 								{foreach $form['questions-'.$id.'-type']->items as $key => $label}
-									<input n:name="questions-$id-type:$key">
+									<input n:name="questions-$id-type:$key" onChange="answerTypeChanged(this)" class="answer-type-input">
 									<label n:name="questions-$id-type:$key" class="radio-label radio-{$key}">
 										<span>
 											<i class="fa fa-dot-circle-o" n:if="$key == 'radio'"></i> 
 											<i class="fa fa-check-square-o" n:if="$key == 'checkbox'"></i> 
 											<i class="fa fa-pencil-square-o" n:if="$key == 'text'"></i> 
-											{* <i class="fa fa-font" n:if="$key == 'text'"></i>  *}
 											{$label}
 										</span>
 									</label>
@@ -53,19 +52,19 @@
 								<div class="answer-group answer-group-radio hidden">
 									<div class="form-group">
 										{label questions-$id-answer_a /}
-										{input questions-$id-answer_a class => 'form-control form-answer', data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
+										{input questions-$id-answer_a class => 'form-control form-answer', onChange=>"formAnswerRadioChanged(this)", data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_b /}
-										{input questions-$id-answer_b class => 'form-control form-answer', data-answer => 'b', placeholder => 'Např.: David Veselý'}
+										{input questions-$id-answer_b class => 'form-control form-answer', onChange=>"formAnswerRadioChanged(this)", data-answer => 'b', placeholder => 'Např.: David Veselý'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_c class => 'form-control form-answer', data-answer => 'c'}
+										{input questions-$id-answer_c class => 'form-control form-answer', onChange=>"formAnswerRadioChanged(this)", data-answer => 'c'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_d class => 'form-control form-answer', data-answer => 'd'}
+										{input questions-$id-answer_d class => 'form-control form-answer', onChange=>"formAnswerRadioChanged(this)", data-answer => 'd'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-correct_answer /}
@@ -75,19 +74,19 @@
 								<div class="answer-group answer-group-checkbox hidden">
 									<div class="form-group">
 										{label questions-$id-answer_a /}
-										{input questions-$id-answer_a class => 'form-control form-answer', data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
+										{input questions-$id-answer_a class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_b /}
-										{input questions-$id-answer_b class => 'form-control form-answer', data-answer => 'b', placeholder => 'Např.: David Veselý'}
+										{input questions-$id-answer_b class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'b', placeholder => 'Např.: David Veselý'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_c class => 'form-control form-answer', data-answer => 'c'}
+										{input questions-$id-answer_c class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'c'}
 									</div>
 									<div class="form-group">
 										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_d class => 'form-control form-answer', data-answer => 'd'}
+										{input questions-$id-answer_d class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'd'}
 									</div>
 									<div class="form-group form-group-correct-answers">
 										{* {label questions-$id-correct_answer /} *}
@@ -106,13 +105,12 @@
 								<div class="answer-group answer-group-text hidden">
 									{label questions-$id-answer_text /}
 									{input questions-$id-answer_text class => 'form-control', placeholder => 'Např.: Steve Jobs'}
+									<br>
 								</div>
 							</div>
 						</div>
 					{/foreach}
 					{$form['questions']['add']->control}
-					{* {input } *}
-					
 				</div>
 				<div class="form-group form-submit">
 					{input submit class => 'btn'}
@@ -126,13 +124,113 @@
 {block scripts}
 {include parent}
 	<script>
-		$('.select-answer-type input').on('change', function(){
-			var value = $(this).val();
-			console.log(value);
-			$('.answer-group').addClass('hidden');
-			$('.answer-group-'+value).removeClass('hidden');
+		function answerTypeChanged (el) {
+			var value = $(el).val();
+			// console.log(value);
+			var $parent = $(el).parents('.question-group').first();
+			
+			$parent.find('.answer-group').addClass('hidden');
+			$parent.find('.answer-group-'+value).removeClass('hidden');
+		}
+		function answersReloaded () {
+			$('.answer-type-input').each(function(index, el) {
+				if ($(el).is(':checked')) {
+					answerTypeChanged (el);
+				}
+			});
+		}
+		$( document ).ajaxComplete(answersReloaded);
+		//Fill selectbox 
+		function formAnswerRadioChanged(el) {
+			// $('.form-answer').on('change', function(){
+				var $questionsGroup = $(el).parents('.question-group').first();
+				var value = $(el).val();
+				var answer = $(el).data('answer');
+				var answerUppercase = answer.toUpperCase();
 
-		});
+				var $thisAnswer = $questionsGroup.find('.form-correct-answer').find('[value='+answer+']');
+				// if (value != '') {
+					$thisAnswer.text('Odpověď '+answerUppercase+' - ' + value);
+				// }else{
+					// $thisAnswer.text('Odpověď '+answerUppercase);
+				// }
+			// });
+		}
+		function formAnswerCheckboxChanged(el) {
+			var $questionsGroup = $(el).parents('.question-group').first();
+			var $answerGroup = $(el).parents('.answer-group');
+
+
+			$answerGroup.find('.form-answer').each( function( index, input ){
+				var $input = $(input);
+				var value = $input.val();
+				var answer = $input.data('answer');
+				var answerUppercase = answer.toUpperCase();
+				var $groupCorrectAnswers = $answerGroup.find('.form-group-correct-answers');
+
+				var answerText = 'Odpověď '+answerUppercase;
+				
+				if (value.length === 0) {
+					$groupCorrectAnswers.find('.checkbox-'+answer).addClass('disabled');
+				}else{
+					var answerText = answerText +' - ' + value;
+					$groupCorrectAnswers.find('.checkbox-'+answer).removeClass('disabled');
+				}
+				
+				$groupCorrectAnswers.find('.checkbox-'+answer+' span').text(answerText);
+			});
+		}
+
+
+		//Fill selectbox 
+		// $('.form-answer').on('change', function(){
+		// 	var $questionsGroup = $(this).parents('.question-group').first();
+		// 	var value = $(this).val();
+		// 	var answer = $(this).data('answer');
+		// 	var answerUppercase = answer.toUpperCase();
+
+		// 	var $thisAnswer = $questionsGroup.find('.form-correct-answer').find('[value='+answer+']');
+		// 	// if (value != '') {
+		// 		$thisAnswer.text('Odpověď '+answerUppercase+' - ' + value);
+		// 	// }else{
+		// 		// $thisAnswer.text('Odpověď '+answerUppercase);
+		// 	// }
+		// });
+
+		// $('.answer-group-checkbox .form-answer').on('change', function(){
+		// 	var $questionsGroup = $(this).parents('.question-group').first();
+		// 	var $answerGroup = $(this).parents('.answer-group');
+
+
+		// 	$answerGroup.find('.form-answer').each( function( index, input ){
+		// 		var $input = $(input);
+		// 		var value = $input.val();
+		// 		var answer = $input.data('answer');
+		// 		var answerUppercase = answer.toUpperCase();
+		// 		var $groupCorrectAnswers = $answerGroup.find('.form-group-correct-answers');
+
+		// 		var answerText = 'Odpověď '+answerUppercase;
+				
+		// 		if (value.length === 0) {
+		// 			$groupCorrectAnswers.find('.checkbox-'+answer).addClass('disabled');
+		// 		}else{
+		// 			var answerText = answerText +' - ' + value;
+		// 			$groupCorrectAnswers.find('.checkbox-'+answer).removeClass('disabled');
+		// 		}
+				
+		// 		$groupCorrectAnswers.find('.checkbox-'+answer+' span').text(answerText);
+		// 	});
+
+		// });
+		// $('.select-answer-type input').on('change', function(){
+		// 	var value = $(this).val();
+		// 	console.log(value);
+		// 	var $parent = $(this).parents('.question-group').first();
+			
+		// 	$parent.find('.answer-group').addClass('hidden');
+		// 	$parent.find('.answer-group-'+value).removeClass('hidden');
+
+		// });
 	</script>
 {/block}
 
