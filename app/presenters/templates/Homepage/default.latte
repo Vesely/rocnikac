@@ -1,15 +1,37 @@
 {* {block title}{/block} *}
 {block content}
-	<div class="home-page">
-		<div class="container">
-			<h1 style="text-align:center">Úvodní stránka</h1>
-			<p style="text-align:center">
-				David Veselý - ročníkový projekt - SPŠT
-				<br>
-				<br>
-				<br>
-				<a n:href="Admin:default">Administrace</a>
-			</p>
+	<div class="landing-page">
+		<div class="hero">
+			<div class="hero-text">
+				<h1>Vytvoř vlastní test <strong>zdarma</strong>!</h1>
+				{if !$user->isLoggedIn()}
+				<a n:href="Sign:default to => 'new'" class="btn btn-join">
+					<span class="icon"><i class="fa fa-pencil"></i></span>
+					<span class="text">Vytvořit test</span>
+				</a>
+				{else}
+				<a n:href="Test:new" class="btn btn-join">
+					<span class="icon"><i class="fa fa-pencil"></i></span>
+					<span class="text">Vytvořit test</span>
+				</a>
+				{* <a n:href="Admin:default" class="btn">Zobrazit testy</a> *}
+				{/if}
+			</div>
+			<div class="hero-bg">
+				<img src="{$basePath}/img/hero.jpg" alt="testujse.eu">
+			</div>
+		</div>
+		<div class="content">
+			<div class="container">
+				<h2>Jak to funguje?</h2>
+				<p>
+					... dodělat ...
+				</p>
+				<br><br><br>
+				<footer style="text-align:center">
+					David Veselý - ročníkový projekt - SPŠT - <a n:href="Admin:default">Administrace</a>
+				</footer>
+			</div>
 		</div>
 	</div>
 {/block}

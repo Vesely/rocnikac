@@ -3,7 +3,7 @@
 	<div class="test-result-page">
 		<div class="container">
 			<div class="test-box">
-			 <h2>Úspěšnost: <em>33%</em></h2>
+			 <h2>Úspěšnost: <em>{$result->percentage}%</em></h2>
 				{foreach $answers as $answer}
 					{var $question = $presenter->questions->getQuestion($answer->questionId)}
 					{dump $answer}
@@ -19,20 +19,54 @@
 								{/if}
 							</span>
 						</h3>
-
+						{if !empty($question->question_img)}
+							<div class="question-img">
+								<img src="{$basePath}/uploads/{$question->question_img}" alt="{$question->question}">
+							</div>
+						{/if}
 						<div class="answers">
-							<div class="answer {if $answer->myAnswer == 'a'}my-answer{/if} {if $answer->correctAnswer == 'a'}correct{/if}">
-								{$question->answer_a}
-							</div>
-							<div class="answer {if $answer->myAnswer == 'b'}my-answer{/if} {if $answer->correctAnswer == 'b'}correct{/if}">
-								{$question->answer_b}
-							</div>
-							<div class="answer {if $answer->myAnswer == 'c'}my-answer{/if} {if $answer->correctAnswer == 'c'}correct{/if}" n:if="!empty($question->answer_c)">
-								{$question->answer_c}
-							</div>
-							<div class="answer {if $answer->myAnswer == 'd'}my-answer{/if} {if $answer->correctAnswer == 'd'}correct{/if}" n:if="!empty($question->answer_d)">
-								{$question->answer_d}
-							</div>
+							{if $answer->answer_type == 'radio'}
+								<div class="answer {if $answer->myAnswer == 'a'}my-answer{/if} {if $answer->correctAnswer == 'a'}correct{/if}">
+									{$question->answer_a}
+								</div>
+								<div class="answer {if $answer->myAnswer == 'b'}my-answer{/if} {if $answer->correctAnswer == 'b'}correct{/if}">
+									{$question->answer_b}
+								</div>
+								<div class="answer {if $answer->myAnswer == 'c'}my-answer{/if} {if $answer->correctAnswer == 'c'}correct{/if}" n:if="!empty($question->answer_c)">
+									{$question->answer_c}
+								</div>
+								<div class="answer {if $answer->myAnswer == 'd'}my-answer{/if} {if $answer->correctAnswer == 'd'}correct{/if}" n:if="!empty($question->answer_d)">
+									{$question->answer_d}
+								</div>
+							{/if}
+							{if $answer->answer_type == 'checkbox'}
+								<div class="answer {if in_array('a', $answer->myAnswer) == 'a'}my-answer{/if} {if in_array('a', $answer->correctAnswer)}correct{/if}">
+									{$question->answer_a}
+								</div>
+								<div class="answer {if in_array('b', $answer->myAnswer) == 'a'}my-answer{/if} {if in_array('b', $answer->correctAnswer)}correct{/if}">
+									{$question->answer_b}
+								</div>
+								<div class="answer {if in_array('c', $answer->myAnswer) == 'a'}my-answer{/if} {if in_array('c', $answer->correctAnswer)}correct{/if}" n:if="!empty($question->answer_c)">
+									{$question->answer_c}
+								</div>
+								<div class="answer {if in_array('d', $answer->myAnswer) == 'a'}my-answer{/if} {if in_array('d', $answer->correctAnswer)}correct{/if}" n:if="!empty($question->answer_d)">
+									{$question->answer_d}
+								</div>
+							{/if}
+							{if $answer->answer_type == 'text'}
+								{if $answer->myAnswer == $answer->correctAnswer}
+									<div class="answer my-answer correct">
+										{$answer->myAnswer}
+									</div>
+								{else}
+									<div class="answer my-answer">
+										<em>Tvá odpověď:</em> {$answer->myAnswer}
+									</div>
+									<div class="answer correct">
+										<em>Správná odpověď:</em> <strong>{$answer->correctAnswer}</strong>
+									</div>
+								{/if}
+							{/if}
 						</div>
 						
 					</div>

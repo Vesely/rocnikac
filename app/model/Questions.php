@@ -38,6 +38,13 @@ class Questions extends Nette\Object
 		}
 	}
 
+	public function findQuestionByImg($question_img) 
+	{
+		if($question_img) {
+			return $this->getQuestions()->where('question_img', $question_img)->fetch();
+		}
+	}
+
 	public function addQuestion($data)
 	{
 		if($data) {

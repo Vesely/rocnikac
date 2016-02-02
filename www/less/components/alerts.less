@@ -1,0 +1,29 @@
+.alert {
+	position: fixed;
+	top: 80px;
+	left: 30px;
+	z-index: 1245;
+	padding: 12px;
+	background: @purple;
+	color: @white;
+	border-radius: 4px;
+	&.success {
+		background: @green;
+		a {
+			color: darken(@green, 20%);
+			&:hover {
+				color: @white;
+			}
+		}
+	}
+	&.error {
+		background: @red;
+	}
+	.close {
+		margin-left: 30px;
+		cursor: pointer;
+		&:hover {
+			opacity: .8;
+		}
+	}
+}

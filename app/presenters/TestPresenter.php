@@ -5,8 +5,11 @@ namespace App\Presenters;
 use Nette,
 	App\Model,
 	Nette\Application\UI\Form,
+	Nette\Utils\Image,
 	Nette\Forms\Container,
-	Nette\Forms\Controls\SubmitButton;
+	Nette\Application\Responses\JsonResponse,
+	Nette\Forms\Controls\SubmitButton,
+	Nette\Security\Passwords;
 
 
 /**
@@ -22,25 +25,95 @@ class TestPresenter extends BasePresenter
 	public function beforeRender()
 	{
 		$this->template->tests = $this->tests->getTests();
-
 	}
 
 	public function renderTest($id)
 	{
 		if(!empty($id)) {
 			$test = $this->tests->getTest($id);
-			$this->template->test = $test;
-			$this->template->questions = $this->questions->getQuestionsInTest($id);
+			$httpRequest = $this->getHttpRequest();
+			$cookie = $httpRequest->getCookie('test'.$id);
+			if (empty($test->password) || !empty($cookie)) {
+				$this->template->test = $test;
+				$this->template->questions = $this->questions->getQuestionsInTest($id);
+			}else{
+				$this->redirect('Test:unlock', array('id' => $id));
+			}
 		} else {
 			$stop();
 		}
 	}
 
-
-	public function renderResult()
+	public function renderUnlock($id)
 	{
-		$json = '{"1":{"isCorrect":false,"questionId":1,"myAnswer":"c","correctAnswer":"b"},"2":{"isCorrect":true,"questionId":2,"myAnswer":"a","correctAnswer":"a"},"3":{"isCorrect":false,"questionId":3,"myAnswer":"b","correctAnswer":"c"}}';
-		$this->template->answers = json_decode($json);
+		if(!empty($id)) {
+			$this->template->test = $this->tests->getTest($id);
+		} else {
+			$this->flashMessage('Test neexistuje!', 'error');
+			$this->redirect('Homepage:default');
+			// $stop();
+		}
+	}
+
+	public function renderDefault()
+	{
+		$this->template->completedTests = $this->testResults->getTestResultsByUserId($this->user->id);
+	}
+
+	public function getTestById($test_id)
+	{
+		return $this->tests->getTest($test_id);
+	}
+
+
+	public function renderResult($test_id)
+	{
+		$user_id = $this->user->id;
+		$result = $this->testResults->getTestResultsByTestIdAndUserId($test_id, $user_id);
+		// $stop();
+		// $json = '{"1":{"isCorrect":false,"questionId":1,"myAnswer":"c","correctAnswer":"b"},"2":{"isCorrect":true,"questionId":2,"myAnswer":"a","correctAnswer":"a"},"3":{"isCorrect":false,"questionId":3,"myAnswer":"b","correctAnswer":"c"}}';
+		$this->template->result = $result;
+		$this->template->answers = json_decode($result->answers);
+	}
+
+
+	/**
+	 * TakeTest form form factory.
+	 * @return Nette\Application\UI\Form
+	 */
+	protected function createComponentUnlockTestForm()
+	{
+		$form = new Nette\Application\UI\Form;
+		
+		$form->addHidden('test_id');
+		
+		$form->addPassword('test_password', 'Heslo:')
+			->setRequired('Zadejte heslo!');
+
+		$form->addSubmit('submit', 'Odeslat');
+
+		$form->onSuccess[] = array($this, 'unlockTestFormFormSucceeded');
+		return $form;
+	}
+
+	public function unlockTestFormFormSucceeded($form)
+	{
+		$values = $form->values;
+		$testId = $values->test_id;
+
+		$test = $this->tests->getTest($testId);
+		// $password = Passwords::hash($values->test_password);
+		$password = $values->test_password;
+
+		if ($test->password == $password) {
+			$httpResponse = $this->getHttpResponse();
+			$httpResponse->setCookie('test'.$testId, 'unlocked', '100 days');
+			$this->redirect('Test:test', array('id' => $testId));
+		}else{
+			$this->flashMessage('Špatné heslo!', 'error');
+			$this->redirect('this');
+		}
+
 	}
 
 
@@ -61,6 +134,8 @@ class TestPresenter extends BasePresenter
 			$questionsGroup = $form->addContainer('group'.$key);
 			$type = $question->type;
 
+			$questionsGroup->addHidden('question_id_'.$key)->setDefaultValue($question->id);
+
 			//Výběr jedné správné odpověďi
 			if($type == 'radio') {
 				//Answers
@@ -73,6 +148,7 @@ class TestPresenter extends BasePresenter
 				
 				//Answer radio list
 				$questionsGroup->addRadioList('answer'.$key, $question->question, $answers)
+					->setAttribute('data-question_id', $question->id)
 					->setRequired('Vyber odpověď k otázce: '.$question->question);
 			}
 
@@ -88,15 +164,17 @@ class TestPresenter extends BasePresenter
 				
 				//Answer radio list
 				$questionsGroup->addCheckboxList('answer'.$key, $question->question, $answers)
+					->setAttribute('data-question_id', $question->id)
 					->setRequired('Vyber odpověďi k otázce: '.$question->question);
 			}
 
 			//Textová odpověď
 			if($type == 'text') {
 				$questionsGroup->addText('answer'.$key, $question->question)
+					->setAttribute('data-question_id', $question->id)
 					->setRequired('Vyplň odpověď k otázce: '.$question->question);
 			}
-			$questionsGroup->addHidden('answer_type'.$key)->setDefaultValue($type);
+			// $questionsGroup->addHidden('answer_type'.$key)->setDefaultValue($type);
 		}
 
 		// $form->addHidden('test_id')->setDefaultValue($testId);
@@ -125,7 +203,9 @@ class TestPresenter extends BasePresenter
 		foreach ($questions as $key => $question) {
 			//Vyplňená odpověď
 			$answer = $form->values['group'.$key]['answer'.$key];
-			$answerType = $form->values['group'.$key]['answer_type'.$key];
+			$questionId = $form->values['group'.$key]['question_id_'.$key];
+			$question = $this->questions->getQuestion($questionId);
+			$answerType = $question->type;
 
 			//Je odpověď správně? (true X false)
 			$correctAnswer = NULL;
@@ -170,13 +250,16 @@ class TestPresenter extends BasePresenter
 			'ins_dt' => new \DateTime
 			);
 
+		// $stop();
+
 		//Zapiš nově provedený test do DB
 		$this->testResults->addTestResult($data);
 		// $stop();
 
 
 		$this->flashMessage('Nový test byl úspěšně odeslán.', 'success');
-		$this->redirect('this');
+		// $this->redirect('this');
+		$this->redirect('Test:result', array('test_id' => $testId));
 	}
 
 
@@ -194,6 +277,7 @@ class TestPresenter extends BasePresenter
 			/** @var \Nette\Application\UI\Presenter $presenter */
 			$presenter->invalidateControl('newTestForm');
 			$presenter->invalidateControl('newTestScripts');
+			$stop();
 		};
 
 
@@ -203,31 +287,39 @@ class TestPresenter extends BasePresenter
 		$attempts = ['Neomezeně', '1', '2', '3', '4', '5', '6'];
 		$form->addSelect('attempts', 'Počet pokusů: ', $attempts);
 
+		$form->addText('test_password', 'Heslo: (nepovinné)');
 		
 		//Questions
 		$questions = $form->addDynamic('questions', function (Container $question) use ($invalidateCallback) {
 			$question->addText('question', ($question->name+1).'. Otázka: ');
 			$question->addUpload('question_img', 'Obrázek k otázce:');
+			$question->addHidden('question_img_filename');
 
 			//Answer type
 			$types = array(
-				'radio' => 'Výběr jedné odpovědi',
-				'checkbox' => 'Výber více odpovědí',
+				'radio' => 'Jedna správná odpovědi',
+				'checkbox' => 'Více správných odpovědí',
 				'text' => 'Textová odpověď'
 				);
 			$question->addRadioList('type', 'Typ odpovědi: ', $types);
 					// ->setDefaultValue('radio');
 
 			
-			//
+			//Single answer
 			$question->addText('answer_a', 'Odpověď A:');
 					//->addConditionOn($question['question'], Form::FILLED)
 					//->setRequired('Vypňte odpověď A.');
 			$question->addText('answer_b', 'Odpověď B:');
-					//->addConditionOn($question['question'], Form::FILLED)
-					//->setRequired('Vypňte odpověď B.');
 			$question->addText('answer_c', 'Odpověď C:');
 			$question->addText('answer_d', 'Odpověď D:');
+
+			//Multi answer
+			$question->addText('answer_a_multi', 'Odpověď A:');
+					//->addConditionOn($question['question'], Form::FILLED)
+					//->setRequired('Vypňte odpověď A.');
+			$question->addText('answer_b_multi', 'Odpověď B:');
+			$question->addText('answer_c_multi', 'Odpověď C:');
+			$question->addText('answer_d_multi', 'Odpověď D:');
 
 			$correctAnswers = array(
 				'a' => 'Odpověď A',
@@ -260,6 +352,7 @@ class TestPresenter extends BasePresenter
 
 
 		$form->addSubmit('submit', 'Vytvořit test')
+			->setValidationScope(FALSE)
 			->onClick[] = array($this, 'newTestFormFormSucceeded');
 
 		// $form->onSuccess[] = array($this, 'newTestFormFormSucceeded');
@@ -282,6 +375,29 @@ class TestPresenter extends BasePresenter
 		$this->invalidateControl('newTestScripts');
 	}
 
+	public function handleProcessImages()
+    {
+        $files = $this->getHttpRequest()->getFiles();
+        foreach($files as $file) {
+			if( $file->isOk() and $file->isImage() ) {
+			    $imageName = $file->getSanitizedName();
+				
+				$image = Image::fromFile($file);
+				$titleHash = md5($imageName);
+				$titleHash = substr($titleHash,0,22);
+				$cover = $titleHash.'-'.mt_rand().'.jpg';
+				
+				$image->resize(660, NULL);
+				$image->save('uploads/'.$cover, 100, Image::JPEG);
+			   
+			    // $file->move(__DIR__ . '/../../temp/files/' . $imageName);
+			    $filesName = $cover;
+			}
+        }
+        $this->payload->cover = $cover;
+        $this->sendPayload();
+    }
+
 	public function newTestFormFormSucceeded($button)
 	{
 		// $values = $form->values;
@@ -293,22 +409,28 @@ class TestPresenter extends BasePresenter
 			$attempts = NULL;
 		}
 
+		if (!empty($values->test_password)) {
+			// $password = Passwords::hash($values->test_password);
+			$password = $values->test_password;
+		}else{
+			$password = null;
+		}
+
 		$dataTest = array(
 			'name' => $values->name,
 			'attempts' => $attempts,
-			'password' => NULL,
+			'password' => $password,
 			'user_id' => $this->user->id,
 			'ins_dt' => new \DateTime
 			);
 
-		//$stop();
+		// $stop();
 		
 		$test = $this->tests->addTest($dataTest);
 		$testId = $test->id;
 		// $testId = 8; //only for testing
 		foreach ($form['questions']->values as $question) {
-			if(!empty($question->question) && ( (!empty($question->answer_a) && !empty($question->answer_b) ) || !empty($question->answer_text)) ) {
-
+			if(!empty($question->question) && ( (!empty($question->answer_a) && !empty($question->answer_b) ) || !empty($question->answer_text)) || (!empty($question->answer_a_multi) && !empty($question->answer_b_multi) )) {
 				$dataQuestion = array(
 					'question' => $question->question,
 					'question_img' => NULL,
@@ -335,10 +457,10 @@ class TestPresenter extends BasePresenter
 					//Encode $correctAnswers to JSON
 					$correctAnswersJson = json_encode($question->correct_answers); 
 					$dataQuestion2 = array(
-						'answer_a' => $question->answer_a,
-						'answer_b' => $question->answer_b,
-						'answer_c' => $question->answer_c ? $question->answer_c : NULL,
-						'answer_d' => $question->answer_d ? $question->answer_d : NULL,
+						'answer_a' => $question->answer_a_multi,
+						'answer_b' => $question->answer_b_multi,
+						'answer_c' => $question->answer_c_multi ? $question->answer_c_multi : NULL,
+						'answer_d' => $question->answer_d_multi ? $question->answer_d_multi : NULL,
 						'correct_answers' => $correctAnswersJson
 					);
 					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
@@ -352,6 +474,23 @@ class TestPresenter extends BasePresenter
 					$dataQuestion = array_merge($dataQuestion, $dataQuestion2);
 				}
 
+
+				//Přidání obrázku k otázce
+				if (!empty($question->question_img_filename)) {
+					$dataQuestion['question_img'] = $question->question_img_filename;
+				}
+				// if ($question->question_img->isOk()) {
+				// 	$image = Image::fromFile($question->question_img);
+				// 	$titleHash = md5($question->question);
+				// 	$titleHash = substr($titleHash,0,22);
+				// 	$cover = $titleHash.'-'.mt_rand().'.jpg';
+					
+				// 	$image->resize(660, NULL);
+				// 	$image->save('uploads/'.$cover, 100, Image::JPEG);
+
+				// 	$dataQuestion['question_img'] = $cover;
+				// }
+
 				//Vložení otázky do DB
 				$new_question = $this->questions->addQuestion($dataQuestion);
 				// $stop();
@@ -362,6 +501,6 @@ class TestPresenter extends BasePresenter
 
 
 		$this->flashMessage('Nový test byl úspěšně vytvořen.', 'success');
-		$this->redirect('this');
+		$this->redirect('Admin:default');
 	}
 }

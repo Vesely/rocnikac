@@ -23,12 +23,22 @@ class TestResults extends Nette\Object
 
 	public function getTestResults() 
 	{
-		return $this->database->table('test_results')->where('del_flag', 0);
+		return $this->database->table('test_results')->where('del_flag', 0)->order('ins_dt DESC');
 	}
 
 	public function getTestResultsByTestId($test_id) 
 	{
 		return $this->getTestResults()->where('test_id', $test_id);
+	}
+
+	public function getTestResultsByUserId($user_id) 
+	{
+		return $this->getTestResults()->where('user_id', $user_id);
+	}
+
+	public function getTestResultsByTestIdAndUserId($test_id, $user_id) 
+	{
+		return $this->getTestResults()->where('test_id', $test_id)->where('user_id', $user_id)->fetch();
 	}
 
 	public function addTestResult($data)

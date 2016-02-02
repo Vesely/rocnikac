@@ -1,0 +1,31 @@
+{* {block title}{/block} *}
+{block content}
+	<div class="test-unlock-page">
+		<div class="container">
+			<div class="test-box">
+				<h2>Zadejte heslo pro test <small>({$test->name})</small></h2>
+				{form unlockTestForm}
+					{input test_id value => $test->id}
+					<div class="form-supergroup">
+						<div class="form-group">
+							{* {label test_password /} *}
+							{input test_password class => 'form-control', placeholder => 'Zadejte heslo k testu...'}
+						</div>
+						<div class="form-group form-group-submit">
+							{label submit /}
+							{input submit class => 'btn'}
+						</div>
+					</div>
+				{/form}
+			</div>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+{/block}
+
+
+{block head}
+{/block}

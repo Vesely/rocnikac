@@ -16,6 +16,16 @@
 		.table {
 			background: @white;
 			border-radius: 4px;
+			.cell-id {
+				@media (max-width: 600px) {
+					display: none;	
+				}
+			}
+			.cell-name {
+				@media (max-width: 600px) {
+					padding-left: 8px;
+				}
+			}
 			thead {
 				tr {
 					th {

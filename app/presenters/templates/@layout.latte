@@ -9,7 +9,7 @@
 	<meta charset="utf-8">
 	<!--[if ie]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
 
-	<title>{ifset title}{include title|striptags|upper} | {/ifset} Ročníkový projekt</title>
+	<title>{ifset title}{include title|striptags} | {/ifset} Ročníkový projekt</title>
 	<meta name="description" content="Ročníkový projekt - testování">
 	<link rel="stylesheet" href="{$basePath}/css/main.min.css">
 	<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
@@ -31,7 +31,21 @@
 			{if !$user->isLoggedIn()}
 			<a n:href="Sign:default" class="join-btn">Přihlásit se</a>
 			{else}
-			<a n:href="Sign:out" class="join-btn">{$user->getIdentity()->fullname} - Odhlasit se</a>
+			<div class="join-menu">
+				<a href="#" class="join-btn btn-submenu">
+					<span class="name">{$user->getIdentity()->fullname}</span>
+					<span class="icon-person"><i class="fa fa-user"></i></span>
+					<i class="fa fa-angle-down"></i>
+				</a>
+				<div class="submenu">
+					<a href="#"><i class="fa fa-user"></i> {$user->getIdentity()->fullname}</a>
+					<a n:href="Test:default" >
+						<i class="fa fa-check"></i>
+						<span>Dokončené testy</span>
+					</a>
+					<a n:href="Sign:out"><i class="fa fa-sign-out"></i> Odhlásit se</a>
+				</div>
+			</div>
 			{/if}
 		</div>
 	</header>
@@ -45,6 +59,10 @@
 		{include content}
 	</div>
 
+	<footer class="footer">
+		Projekt vytvořil <a href="http://davidvesely.cz/">David Veselý</a>.
+	</footer>
+
 	{block scripts}
 	{snippet scripts}
 	{*<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>*}
@@ -52,6 +70,7 @@
 	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
 	<script src="{$basePath}/js/nette.ajax.js"></script>
 	{*<script src="{$basePath}/js/live-form-validation.js"></script>*}
+	<script src="{$basePath}/js/tooltipster.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
 	<script>$.nette.init();</script>
 	{/snippet}

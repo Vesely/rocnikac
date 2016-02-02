@@ -4,6 +4,12 @@
 		<div class="container">
 			<div class="test-box">
 				<h2>{$test->name}</h2>
+				{if $test->user->id == $user->getIdentity()->id}
+					<a href="#" onClick="window.print();return false" class="btn btn-print">
+						<i class="fa fa-print"></i>
+						<span> Vytisknout</span>
+					</a>
+				{/if}
 				{* <small><em>//Test vytvořil {$test->user->fullname}</em></small> *}
 				{* {control takeTestForm} *}
 				{form takeTestForm}
@@ -11,21 +17,48 @@
 						{foreach $form->groups[questions]->controls as $key => $answer}
 							<div class="form-group shuffle">
 								<label class="label-big">{$answer->caption}</label>
-								{dump $answer}
-								
 								{if get_class($answer) == 'Nette\Forms\Controls\TextInput'}
 									{* Textová odpověď *}
+									{var $questionId = $answer->getControl()->attrs['data-question_id']}
+									{var $question = $presenter->questions->getQuestion($questionId)}
+									
+									{* Zobrazení obrázku *}
+									{if !empty($question->question_img)}
+										<div class="question-img">
+											<img src="{$basePath}/uploads/{$question->question_img}" alt="{$question->question}">
+										</div>
+									{/if}
+
+									{* Textový input *}
 									{input $answer class => 'form-control', placeholder => 'Napište přesnou odpověď..'}
 								{elseif get_class($answer) == 'Nette\Forms\Controls\HiddenField'}
 									{* Hidden input *}
 									{input $answer}
+									{* {var $question = $presenter->questions->getQuestion($answer->getValue())}
+									{if !empty($question->question_img)}
+										<div class="question-img">
+											<img src="{$basePath}/uploads/{$question->question_img}" alt="{$question->question}">
+										</div>
+									{/if} *}
 								{else}
 									{* Radio/checbox *}
+									{var $questionId = $answer->getControlPart(0)->attrs['data-question_id']}
+									{var $question = $presenter->questions->getQuestion($questionId)}
+									
+									{* Zobrazení obrázku *}
+									{if !empty($question->question_img)}
+										<div class="question-img">
+											<img src="{$basePath}/uploads/{$question->question_img}" alt="{$question->question}">
+										</div>
+									{/if}
+									
+									{*
+										Výpis jednotlivých položek v radio/checkbox
+									*}
 									{foreach $answer->getItems() as $key => $value}
 										{var $type = $answer->getControlPart($key)->attrs['type']}
 										<div class="{$type}">
 											{$answer->getControlPart($key)}
-
 											{var $label = $answer->getLabelPart($key)}
 											{$label->startTag()|noescape}
 												<span>{$label->getText()|noescape}</span>

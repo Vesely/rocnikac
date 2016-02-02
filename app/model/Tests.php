@@ -23,7 +23,7 @@ class Tests extends Nette\Object
 
 	public function getTests() 
 	{
-		return $this->database->table('tests')->where('del_flag', 0);
+		return $this->database->table('tests')->where('del_flag', 0)->order('ins_dt DESC');
 	}
 
 	public function getTestsByUserId($user_id) 
@@ -49,7 +49,14 @@ class Tests extends Nette\Object
 	public function removeTest($id)
 	{
 		if($id) {
-			return $this->database->table('test')->where('id', $id)->update(array('del_flag' => 1));
+			return $this->database->table('tests')->where('id', $id)->update(array('del_flag' => 1));
+		}
+	}
+
+	public function undoRemoveTest($id)
+	{
+		if($id) {
+			return $this->database->table('tests')->where('id', $id)->update(array('del_flag' => 0));
 		}
 	}
 

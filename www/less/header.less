@@ -53,12 +53,64 @@
 			height: @header-height;
 			line-height: @header-height;
 			display: block;
-			padding-left: 20px;
-			padding-right: 20px;
+			padding-left: 25px;
+			padding-right: 25px;
 			text-decoration: none;
+			.icon-person {
+				// display: none;
+				margin-right: 3px;
+				// @media (max-width: 690px) {
+				// 	display: inline-block;
+				// }
+			}
+			.name {
+				display: none;
+				// @media (max-width: 690px) {
+				// 	display: none;
+				// }
+			}
 			&:hover, 
 			&:focus {
 				background: darken(@purple, 10%);
+			}
+			&.btn-submenu {
+				&:hover, 
+				&:focus {
+					background: @purple;
+				}
+			}
+		}
+		.join-menu {
+			position: relative;
+			z-index: 123;
+			&:hover {
+				.submenu {
+					display: block;
+				}
+			}
+			.submenu {
+				position: absolute;
+				z-index: 1234;
+				right: 0;
+				// width: 100%;
+				width: 180px;
+				font-size: 14px;
+				display: none;
+				// @media (max-width: 690px) {
+				// 	width: 180px;
+				// }
+				a {
+					height: 40px;
+					line-height: 40px;
+					display: block;
+					color: @white;
+					background: darken(@purple, 10%);
+					border-bottom: 1px solid darken(@purple, 15%);
+					&:hover {
+						color: lighten(@purple, 20%);
+						text-decoration: none;
+					}
+				}
 			}
 		}
 	}

@@ -1,4 +1,10 @@
-{* {block title}{/block} *}
+{block title}Vytváření nového testu{/block}
+{block header-left}
+	<a n:href="Admin:default" class="goback-btn">
+		<i class="fa fa-angle-left"></i>
+		<span>Zpět na seznam testů</span>
+	</a>
+{/block}
 {block content}
 	<div class="new-test-page">
 		<div class="container">
@@ -13,6 +19,11 @@
 						{label name /}
 						{input name class => 'form-control form-control-big', placeholder => 'Napište název testu...'}
 					</div>
+					<div class="form-group form-group-password">
+						{label test_password /}
+						{input test_password class => 'form-control form-control-big form-control-password', placeholder => '********'}
+						<button type="button" class="btn-eye"></button>
+					</div>
 					<div class="form-group form-group-attempts">
 						{label attempts /}
 						{input attempts class => 'form-control form-control-big'}
@@ -21,15 +32,20 @@
 				{* <h2>Otázky: </h2> *}
 				<div class="questions">
 					{foreach $form['questions']->containers as $id => $question}
+						{* {dump $form['questions']} *}
 						<div class="question-group">
 							<div class="form-group-row">
 								<div class="form-group form-group-question">
 									{label questions-$id-question class => 'label-big' /}
 									{input questions-$id-question class => 'form-control form-control-big', placeholder => 'Např.: Kdo je zakladatelem Facebooku? '}
+									<div class="image-preview">
+										<img class="hidden" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="preview">
+									</div>
 								</div>
 								<div class="form-group form-group-question_img">
-									{label questions-$id-question_img /}
-									{input questions-$id-question_img class => 'form-control-file'}
+									{label questions-$id-question_img}OBRÁZEK K OTÁZCE: <small>(Nepovinný)</small>{/label}
+									{input questions-$id-question_img class => 'form-control-file', onChange => 'showImagePreview(this)', accept=>"image/*"}
+									{input questions-$id-question_img_filename class => 'form-control-filename'}
 								</div>
 								{if $id > 0}{input questions-$id-remove class => 'btn btn-simple btn-remove-question ajax'}{/if}
 							</div>
@@ -73,24 +89,22 @@
 								</div>
 								<div class="answer-group answer-group-checkbox hidden">
 									<div class="form-group">
-										{label questions-$id-answer_a /}
-										{input questions-$id-answer_a class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
+										{label questions-$id-answer_a_multi /}
+										{input questions-$id-answer_a_multi class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'a', placeholder => 'Např.: Mark Zuckerberg'}
 									</div>
 									<div class="form-group">
-										{label questions-$id-answer_b /}
-										{input questions-$id-answer_b class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'b', placeholder => 'Např.: David Veselý'}
+										{label questions-$id-answer_b_multi /}
+										{input questions-$id-answer_b_multi class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'b', placeholder => 'Např.: David Veselý'}
 									</div>
 									<div class="form-group">
-										{label questions-$id-answer_c}Odpověď C: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_c class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'c'}
+										{label questions-$id-answer_c_multi}Odpověď C: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_c_multi class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'c'}
 									</div>
 									<div class="form-group">
-										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
-										{input questions-$id-answer_d class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'd'}
+										{label questions-$id-answer_d_multi}Odpověď D: <small>(nepovinné)</small>{/label}
+										{input questions-$id-answer_d_multi class => 'form-control form-answer', onChange => "formAnswerCheckboxChanged(this)", data-answer => 'd'}
 									</div>
 									<div class="form-group form-group-correct-answers">
-										{* {label questions-$id-correct_answer /} *}
-										{* {input questions-$id-correct_answer class => 'form-control form-correct-answer'} *}
 										<label>Správné odpovědi:</label>
 										<div class="correct-answers-container">
 											{foreach $form['questions-'.$id.'-correct_answers']->items as $key => $label}
@@ -114,6 +128,10 @@
 				</div>
 				<div class="form-group form-submit">
 					{input submit class => 'btn'}
+					{* <button type="submit" class="btn">
+						<span class="loader"></span>
+						<span class="text">Vytvořit test</span>
+					</button> *}
 				</div>
 			{/form}
 			{/snippet}
@@ -138,23 +156,34 @@
 					answerTypeChanged (el);
 				}
 			});
+
+			$('.form-answer').each(function(index, el) {
+				if($(el).parent().parent().hasClass('answer-group-radio')) {
+					formAnswerRadioChanged(el);
+				}else{
+					formAnswerCheckboxChanged(el);
+				}
+			});
+
+			$('.form-control-filename').each(function(index, el) {
+				if($(el).val() != '') {
+					var src = $(el).val();
+					var $imagePreviewImg = $(el).parents('.form-group-row').first().find('.image-preview img');
+	        		$imagePreviewImg.attr('src', {$basePath}+'/uploads/'+src).removeClass('hidden');
+				}
+			});
 		}
 		$( document ).ajaxComplete(answersReloaded);
 		//Fill selectbox 
 		function formAnswerRadioChanged(el) {
-			// $('.form-answer').on('change', function(){
-				var $questionsGroup = $(el).parents('.question-group').first();
-				var value = $(el).val();
-				var answer = $(el).data('answer');
-				var answerUppercase = answer.toUpperCase();
+			var $questionsGroup = $(el).parents('.question-group').first();
+			var value = $(el).val();
+			var answer = $(el).data('answer');
+			var answerUppercase = answer.toUpperCase();
 
-				var $thisAnswer = $questionsGroup.find('.form-correct-answer').find('[value='+answer+']');
-				// if (value != '') {
-					$thisAnswer.text('Odpověď '+answerUppercase+' - ' + value);
-				// }else{
-					// $thisAnswer.text('Odpověď '+answerUppercase);
-				// }
-			// });
+			var $thisAnswer = $questionsGroup.find('.form-correct-answer').find('[value='+answer+']');
+			
+			$thisAnswer.text('Odpověď '+answerUppercase+' - ' + value);
 		}
 		function formAnswerCheckboxChanged(el) {
 			var $questionsGroup = $(el).parents('.question-group').first();
@@ -181,56 +210,47 @@
 			});
 		}
 
-
-		//Fill selectbox 
-		// $('.form-answer').on('change', function(){
-		// 	var $questionsGroup = $(this).parents('.question-group').first();
-		// 	var value = $(this).val();
-		// 	var answer = $(this).data('answer');
-		// 	var answerUppercase = answer.toUpperCase();
-
-		// 	var $thisAnswer = $questionsGroup.find('.form-correct-answer').find('[value='+answer+']');
-		// 	// if (value != '') {
-		// 		$thisAnswer.text('Odpověď '+answerUppercase+' - ' + value);
-		// 	// }else{
-		// 		// $thisAnswer.text('Odpověď '+answerUppercase);
-		// 	// }
-		// });
-
-		// $('.answer-group-checkbox .form-answer').on('change', function(){
-		// 	var $questionsGroup = $(this).parents('.question-group').first();
-		// 	var $answerGroup = $(this).parents('.answer-group');
+		//Show image preview
+		function showImagePreview(input) {
+		    processImages(input.files[0], input);
+		}
 
 
-		// 	$answerGroup.find('.form-answer').each( function( index, input ){
-		// 		var $input = $(input);
-		// 		var value = $input.val();
-		// 		var answer = $input.data('answer');
-		// 		var answerUppercase = answer.toUpperCase();
-		// 		var $groupCorrectAnswers = $answerGroup.find('.form-group-correct-answers');
+		function processImages(file, input) {
+            var oMyForm = new FormData();
+            var oReq = new XMLHttpRequest();
+            oMyForm.append("file", file);
+            oReq.open("POST", {link processImages!}, true);
+            
+            oReq.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            oReq.addEventListener("progress", updateProgress, false);
+            oReq.addEventListener("load", function(oEvent) {
+	       		var src = oEvent.target.response;
+	       		var src = JSON.parse(src).cover;
+	        	
+	        	var $imagePreviewImg = $(input).parents('.form-group-row').first().find('.image-preview img');
+	        	var $controlFilename = $(input).parents('.form-group-row').first().find('.form-control-filename');
+	        	$controlFilename.attr('value', src);
+	       		
+	       		$imagePreviewImg.attr('src', {$basePath}+'/uploads/'+src).removeClass('hidden');
 
-		// 		var answerText = 'Odpověď '+answerUppercase;
-				
-		// 		if (value.length === 0) {
-		// 			$groupCorrectAnswers.find('.checkbox-'+answer).addClass('disabled');
-		// 		}else{
-		// 			var answerText = answerText +' - ' + value;
-		// 			$groupCorrectAnswers.find('.checkbox-'+answer).removeClass('disabled');
-		// 		}
-				
-		// 		$groupCorrectAnswers.find('.checkbox-'+answer+' span').text(answerText);
-		// 	});
+            }, false);
+            oReq.send(oMyForm);
+	    }
+	   
+	    function updateProgress(oEvent) {
+	        if (oEvent.lengthComputable) {
+	            var percentComplete = oEvent.loaded / oEvent.total;
+	            // console.log(percentCompelte);
+	            // $('#bar-inner').css('width', percentComplete + '%');
+	        }
+	    }
 
-		// });
-		// $('.select-answer-type input').on('change', function(){
-		// 	var value = $(this).val();
-		// 	console.log(value);
-		// 	var $parent = $(this).parents('.question-group').first();
-			
-		// 	$parent.find('.answer-group').addClass('hidden');
-		// 	$parent.find('.answer-group-'+value).removeClass('hidden');
-
-		// });
+	    $('.btn-eye').on('click', function(){
+		  var $inp = $('.form-control-password');  
+		  $inp.attr('type') === 'password' ? 
+		    $inp.attr('type', 'text') : $inp.attr('type', 'password');
+	    });
 	</script>
 {/block}
 

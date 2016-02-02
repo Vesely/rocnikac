@@ -1,0 +1,45 @@
+{* {block title}{/block} *}
+{block content}
+	<div class="test-list-page">
+		<div class="container">
+			<div class="finishedtest" n:if="$completedTests->count() > 0">
+				<h2>Testy které jsi provedl: </h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#ID</th>
+							<th>Název testu: </th>
+							<th>Počet otázek: </th>
+							<th>Procentuální úspěšnost: </th>
+							<th>Akce:</th>
+						</tr>
+						{foreach $completedTests as $completedTest}
+							{var $test = $presenter->getTestById($completedTest->test_id)}
+							{if !empty($test)}
+								<tr>
+									<td>{$completedTest->id}</td>
+									<td><a n:href="Test:test id => $test->id">{$completedTest->test->name}</a></td>
+									<td>{$test->related('questions')->count()}</td>
+									<td><strong>{$completedTest->percentage}</strong>%</td>
+									<td>
+										<a n:href="Test:result test_id => $test->id" class="btn btn-small btn-results tooltip" title="Zobrazit vyhodnocení testu.">
+											<i class="fa fa-eye"></i> <span>Vyhodnocení</span>
+										</a>
+									</td>
+								</tr>
+							{/if}
+						{/foreach}
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+{/block}
+
+
+{block head}
+{/block}

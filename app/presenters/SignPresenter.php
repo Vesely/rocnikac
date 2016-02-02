@@ -19,12 +19,19 @@ class SignPresenter extends BasePresenter
 	/** @var SignUpFormFactory @inject */
 	public $factoryUp;
 
-	
 
 	public function beforeRender()
 	{
 		// $pw = Passwords::hash('123456');
 		// $stop();
+	}
+
+	public function renderDefault($to)
+	{
+		if ($to == 'new') {			
+			$httpResponse = $this->getHttpResponse();
+			$httpResponse->setCookie('to', 'new', '2 days');
+		}
 	}
 
 
@@ -36,7 +43,17 @@ class SignPresenter extends BasePresenter
 	{
 		$form = $this->factoryIn->create();
 		$form->onSuccess[] = function ($form) {
-			$form->getPresenter()->redirect('Admin:');
+			$httpRequest = $form->getPresenter()->getHttpRequest();
+			$cookie = $httpRequest->getCookie('to');
+			
+			if (!empty($cookie)) {
+				$httpResponse = $form->getPresenter()->getHttpResponse();
+				$httpResponse->deleteCookie('to');
+				
+				$form->getPresenter()->redirect('Test:new');
+			}else{
+				$form->getPresenter()->redirect('Admin:');
+			}
 		};
 		return $form;
 	}
@@ -50,7 +67,17 @@ class SignPresenter extends BasePresenter
 	{
 		$form = $this->factoryUp->create();
 		$form->onSuccess[] = function ($form) {
-			$form->getPresenter()->redirect('Admin:');
+			$httpRequest = $form->getPresenter()->getHttpRequest();
+			$cookie = $httpRequest->getCookie('to');
+			
+			if (!empty($cookie)) {
+				$httpResponse = $form->getPresenter()->getHttpResponse();
+				$httpResponse->deleteCookie('to');
+				
+				$form->getPresenter()->redirect('Test:new');
+			}else{
+				$form->getPresenter()->redirect('Admin:');
+			}
 		};
 		return $form;
 	}
@@ -60,7 +87,7 @@ class SignPresenter extends BasePresenter
 	{
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jsi úspěšně odhlášen.');
-		$this->redirect('Sign:default');
+		$this->redirect('Homepage:default');
 	}
 
 }

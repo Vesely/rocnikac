@@ -17,9 +17,9 @@
     text-decoration: underline;
   }
 
-  a[href]:after {
-    content: " (" attr(href) ")";
-  }
+  // a[href]:after {
+  //   content: " (" attr(href) ")";
+  // }
 
   abbr[title]:after {
     content: " (" attr(title) ")";
@@ -66,5 +66,50 @@
   // Once fixed, we can just straight up remove this.
   select {
     background: #fff !important;
+  }
+
+
+  .header {
+    display: none !important;
+  }
+  .test-page .test-box {
+    margin-top: 0px !important;
+  }
+  .test-box .btn {
+    display: none !important;
+  }
+  .form-group {
+     page-break-inside: avoid;
+  }
+
+  ::-webkit-input-placeholder { /* WebKit browsers */
+      color: transparent;
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+      color: transparent;
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+      color: transparent;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10+ */
+      color: transparent;
+  }
+
+  .footer {
+    margin-top: 0px;
+    height: 30px;
+    line-height: 30px;
+
+    position: fixed;
+    bottom: -15px;
+    width: 100%;
+
+    a[href]:after {
+      content: " (" attr(href) ")";
+    }
+  }
+
+  .question-img img {
+    height: 200px !important;
   }
 }
