@@ -2,7 +2,13 @@
   "name": "rocnikac",
   "version": "0.0.1",
   "description": "Ročníkový projekt - David Veselý - SPŠT",
+  "homepage": "https://testujse.eu/",
+  "author": "David Veselý <jsem@davidvesely.cz> (http://davidvesely.cz/)",
   "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vesely/rocnikac"
+  },
   "dependencies": {
     "gulp": "^3.8.5",
     "gulp-watch": "^0.6.8"
