@@ -33,16 +33,23 @@
 			{else}
 			<div class="join-menu">
 				<a href="#" class="join-btn btn-submenu">
-					<span class="name">{$user->getIdentity()->fullname}</span>
 					<span class="icon-person"><i class="fa fa-user"></i></span>
+					<span class="name">{$user->getIdentity()->fullname}</span>
 					<i class="fa fa-angle-down"></i>
 				</a>
 				<div class="submenu">
-					<a href="#"><i class="fa fa-user"></i> {$user->getIdentity()->fullname}</a>
-					<a n:href="Test:default" >
-						<i class="fa fa-check"></i>
-						<span>Dokončené testy</span>
-					</a>
+					{* <a href="#"><i class="fa fa-user"></i> {$user->getIdentity()->fullname}</a> *}
+					{if $user->isInRole('teacher')}
+						<a n:href="Admin:default">
+							<i class="fa fa-list"></i>
+							<span>Vytvořené testy</span>
+						</a>
+					{else}
+						<a n:href="Test:default" >
+							<i class="fa fa-check"></i>
+							<span>Dokončené testy</span>
+						</a>
+					{/if}
 					<a n:href="Sign:out"><i class="fa fa-sign-out"></i> Odhlásit se</a>
 				</div>
 			</div>
@@ -71,6 +78,7 @@
 	<script src="{$basePath}/js/nette.ajax.js"></script>
 	{*<script src="{$basePath}/js/live-form-validation.js"></script>*}
 	<script src="{$basePath}/js/tooltipster.min.js"></script>
+	<script src="{$basePath}/js/jquery.dataTables.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
 	<script>$.nette.init();</script>
 	{/snippet}

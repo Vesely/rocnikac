@@ -19,6 +19,9 @@
 			position: absolute;
 			top: 20px;
 			right: 20px;
+			@media (max-width: 500px) {
+				display: none;
+			}
 		}
 
 
@@ -30,6 +33,26 @@
 
 		.question-img {
 			margin-bottom: 7px;
+			img {
+				max-width: 100%;
+			}
+		}
+
+		.form-group {
+			.btn {
+				@media (max-width: 500px) {
+					width: 100%;
+					padding-top: 14px;
+					padding-bottom: 14px;
+					font-size: 15px;
+				}
+			}
+		}
+
+		.checkbox {
+			label {
+				max-width: 90%;
+			}
 		}
 
 		

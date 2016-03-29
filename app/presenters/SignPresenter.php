@@ -26,11 +26,15 @@ class SignPresenter extends BasePresenter
 		// $stop();
 	}
 
-	public function renderDefault($to)
+	public function renderDefault($to, $toTest=null)
 	{
-		if ($to == 'new') {			
-			$httpResponse = $this->getHttpResponse();
+		$httpResponse = $this->getHttpResponse();
+		if ($to == 'new') {	
 			$httpResponse->setCookie('to', 'new', '2 days');
+		}
+		if (($to == 'test') && (!empty($toTest))) {	
+			$httpResponse->setCookie('to', 'test', '2 days');
+			$httpResponse->setCookie('toTest', $toTest, '2 days');
 		}
 	}
 
@@ -44,13 +48,19 @@ class SignPresenter extends BasePresenter
 		$form = $this->factoryIn->create();
 		$form->onSuccess[] = function ($form) {
 			$httpRequest = $form->getPresenter()->getHttpRequest();
+			$httpResponse = $form->getPresenter()->getHttpResponse();
 			$cookie = $httpRequest->getCookie('to');
+			$cookieTest = $httpRequest->getCookie('toTest');
 			
 			if (!empty($cookie)) {
-				$httpResponse = $form->getPresenter()->getHttpResponse();
-				$httpResponse->deleteCookie('to');
-				
-				$form->getPresenter()->redirect('Test:new');
+				if($cookie == 'new'){
+					$httpResponse->deleteCookie('to');
+					$form->getPresenter()->redirect('Test:new');
+				}
+				if($cookie == 'test'){
+					$httpResponse->deleteCookie('to');
+					$form->getPresenter()->redirect('Test:test', array('id' => $cookieTest));
+				}
 			}else{
 				$form->getPresenter()->redirect('Admin:');
 			}
@@ -65,16 +75,28 @@ class SignPresenter extends BasePresenter
 	 */
 	protected function createComponentSignUpForm()
 	{
-		$form = $this->factoryUp->create();
+		// $httpRequest = $this->getHttpRequest();
+		$params = $this->params;
+		$to = NULL;
+		if(array_key_exists('to', $params)) {
+			$to = $params['to'];
+		}
+		
+		$form = $this->factoryUp->create($to);
 		$form->onSuccess[] = function ($form) {
 			$httpRequest = $form->getPresenter()->getHttpRequest();
+			$httpResponse = $form->getPresenter()->getHttpResponse();
 			$cookie = $httpRequest->getCookie('to');
 			
 			if (!empty($cookie)) {
-				$httpResponse = $form->getPresenter()->getHttpResponse();
-				$httpResponse->deleteCookie('to');
-				
-				$form->getPresenter()->redirect('Test:new');
+				if($cookie == 'new'){
+					$httpResponse->deleteCookie('to');
+					$form->getPresenter()->redirect('Test:new');
+				}
+				if($cookie == 'test'){
+					$httpResponse->deleteCookie('to');
+					$form->getPresenter()->redirect('Test:test', array('id' => $cookieTest));
+				}
 			}else{
 				$form->getPresenter()->redirect('Admin:');
 			}

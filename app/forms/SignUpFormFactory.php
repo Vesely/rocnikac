@@ -27,7 +27,7 @@ class SignUpFormFactory extends Nette\Object
 	/**
 	 * @return Form
 	 */
-	public function create()
+	public function create($to)
 	{
 		$form = new Form;
 		
@@ -52,8 +52,13 @@ class SignUpFormFactory extends Nette\Object
 			'student' => 'Student',
 			'teacher' => 'Učitel',
 		);
-		$form->addRadioList('role', 'Kdo jsi?', $role)
+		$role = $form->addRadioList('role', 'Kdo jsi?', $role)
 			->setDefaultValue('student');
+		
+		// $cookie = $httpRequest->getCookie('to');
+		if($to == 'new'){
+			$role->setDefaultValue('teacher');
+		}
 
 		$form->addSubmit('send', 'Zaregistrovat se');
 

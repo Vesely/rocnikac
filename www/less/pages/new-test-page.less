@@ -18,23 +18,51 @@
 			}
 			.form-group-name {
 				width: 60%;
+				@media (max-width: 700px) {
+					width: 100%;
+					float: none;
+					margin-left: 0;
+					margin-right: 0;
+				}
 			}
 			.form-group-password {
 				width: 18%;
 				margin-left: 2%;
+				@media (max-width: 700px) {
+					width: 100%;
+					float: none;
+					margin-left: 0;
+					margin-right: 0;
+				}
 			}
 			.form-group-attempts {
 				width: 18%;
 				margin-left: 2%;
+				@media (max-width: 700px) {
+					width: 100%;
+					float: none;
+					margin-left: 0;
+					margin-right: 0;
+				}
 			}
 
 			.form-group-question {
 				width: 72%;
+				@media (max-width: 700px) {
+					width: 100%;
+					float: none;
+				}
 			}
 			.form-group-question_img {
 				width: 25%;
 				margin-left: 3%;
 				margin-top: 30px;
+				@media (max-width: 700px) {
+					width: 100%;
+					float: none;
+					margin-left: 0;
+					margin-top: 15px;
+				}
 			}
 			.form-control-file {
 				height: 30px;
@@ -115,7 +143,11 @@
 			}
 		}
 
-		
+		.form-group-correct-answer {
+			.form-control {
+				color: @green;
+			}
+		}
 		.form-group-correct-answers {
 			.correct-answers-container {
 				border: 1px solid @border-gray;
@@ -123,6 +155,9 @@
 				padding-top: 7px;
 				.checkbox {
 					width: 100%;
+					label {
+						max-width: 90%;
+					}
 					&.disabled {
 						cursor: not-allowed;
 						input:not(:checked) + label {
@@ -154,6 +189,9 @@
 		.form-radio {
 			.radio-label {
 				width: 33%;
+				@media (max-width: 400px) {
+					font-size: 10px;
+				}
 				.fa {
 					font-size: 10px;
 					display: inline-block;
@@ -162,13 +200,31 @@
 				&.radio-radio {
 					border-right: 0;
 					border-radius: 4px 0 0 4px;
+					@media (max-width: 400px) {
+						width: 37%;
+					}
 				}
 				&.radio-checkbox {
-
+					@media (max-width: 400px) {
+						width: 37%;
+					}
 				}
 				&.radio-text {
 					border-left: 0;
 					border-radius: 0 4px 4px 0;
+					@media (max-width: 400px) {
+						width: 26%;
+					}
+				}
+				.smhide {
+					@media (max-width: 700px) {
+						display: none;
+					}
+				}
+				.xshide {
+					@media (max-width: 400px) {
+						display: none;
+					}
 				}
 			}
 		}
@@ -196,11 +252,11 @@
 			float: right;
 			display: block;
 			margin-top: 8px;
-			// background: @purple;
-			// color: @white;
+			background: @blue;
+			color: @white;
 			&:hover,
 			&:focus {
-				// background: darken(@purple, 8%);
+				background: darken(@blue, 8%);
 			}
 		}
 		.btn-remove-question {
@@ -219,6 +275,14 @@
 			margin-top: 45px;
 			padding-top: 20px;
 			position: relative;
+			.btn {
+				@media (max-width: 500px) {
+					width: 100%;
+					padding-top: 14px;
+					padding-bottom: 14px;
+					font-size: 15px;
+				}
+			}
 			.loader {
 				.anim;
 				background: url(../img/loader.svg) no-repeat;

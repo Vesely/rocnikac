@@ -1,0 +1,19 @@
+{* {block title}Chyba!{/block} *}
+{block content}
+	<div class="toomanyattempts-page">
+		<div class="container">
+			<h2><abbr title="{$test->name}" class="tooltip">Tento test</abbr> nemůžeš dělat víc než {$test->attempts}krát</h2>
+			<p>
+				Zkus kontaktovat zakladatele testu a email <strong>{$test->user->email}</strong>
+			</p>
+		</div>
+	</div>
+{/block}
+
+{block scripts}
+{include parent}
+{/block}
+
+
+{block head}
+{/block}

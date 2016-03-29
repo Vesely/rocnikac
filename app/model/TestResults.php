@@ -41,6 +41,11 @@ class TestResults extends Nette\Object
 		return $this->getTestResults()->where('test_id', $test_id)->where('user_id', $user_id)->fetch();
 	}
 
+	public function getMyTestAttemps($test_id, $user_id) 
+	{
+		return $this->getTestResults()->where('test_id', $test_id)->where('user_id', $user_id)->count();
+	}
+
 	public function addTestResult($data)
 	{
 		if($data) {

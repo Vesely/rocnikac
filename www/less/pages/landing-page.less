@@ -25,6 +25,8 @@
 				}
 				@media (max-width: 760px) {
 					margin-top: 22vh;
+					padding-right: 15px;
+					padding-left: 15px;
 				}
 			}
 			.btn {
@@ -58,11 +60,21 @@
 						}
 					}
 				}
+				&:active,
+				&.active {
+					transform: translateY(1px);
+					outline: 0;
+					background-image: none;
+					&:focus {
+						outline: 0;
+					}
+				}
 			}
 		}
 		.hero-bg {
 			z-index: 1;
 			position: absolute;
+			width: 100%;
 			&:before {
 				content: '';
 				position: absolute;
@@ -91,10 +103,68 @@
 		h2 {
 			margin-top: 40px;
 			text-align: center;
+			margin-bottom: 60px;
 		}
-		p {
-			text-align: center;
-			margin-bottom: 120px;
+		.tutorials {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 60px;
+			position: relative;
+			@media (max-width: 600px) {
+				flex-direction: column;
+				justify-content: center;
+			}
+			&:before,
+			&:after {
+				content: '';
+				position: absolute;
+				left: 5%;
+				top: 0;
+				background: url(../img/right-arrow.svg) no-repeat;
+				background-size: 100px auto;
+				background-position: center center;
+				width: 50%;
+				height: 100px;
+				display: block;
+				opacity: .7;
+				@media (max-width: 600px) {
+					display: none;
+				}
+			}
+			&:after {
+				background-image: url(../img/right-arrow2.svg);
+				right: 5%;
+				left: auto;
+			}
+			.tutorial {
+				text-align: center;
+				width: 200px;
+				position: relative;
+				@media (max-width: 600px) {
+					width: auto;
+					margin-bottom: 40px;
+				}
+				.icon {
+					background: @purple;
+					font-size: 33px;
+					color: @white;
+					border-radius: 50%;
+					width: 80px;
+					height: 80px;
+					line-height: 80px;
+					margin: 0 auto;
+				}
+			}
+		}
+
+		.purple-section {
+			padding-top: 100px;
+			padding-bottom: 100px;
+			background: @border-gray;
+			color: @white;
+			a {
+				color: @white;
+			}
 		}
 	}
 }

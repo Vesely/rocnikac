@@ -2,8 +2,14 @@
 {block content}
 	<div class="test-list-page">
 		<div class="container">
-			<div class="finishedtest" n:if="$completedTests->count() > 0">
-				<h2>Testy které jsi provedl: </h2>
+			{if $user->isInRole('student')}
+				<h2 class="text-center">Ahoj, {$user->getIdentity()->fullname}!</h2>
+			{/if}
+			{if $completedTests->count() < 0}
+				<em>Zatím jsi neprošel žádným testem! Vyčkej až ti učitel odešle odkaz.</em>
+			{else}
+			<div class="finishedtest">
+				<h3>Testy, které jsi dokončil: </h3>
 				<table class="table">
 					<thead>
 						<tr>
@@ -32,6 +38,7 @@
 					</thead>
 				</table>
 			</div>
+			{/if}
 		</div>
 	</div>
 {/block}

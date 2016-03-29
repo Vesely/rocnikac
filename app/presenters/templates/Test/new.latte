@@ -17,10 +17,11 @@
 				<div class="form-group-row">
 					<div class="form-group form-group-name">
 						{label name /}
-						{input name class => 'form-control form-control-big', placeholder => 'Napište název testu...'}
+						{input name class => 'form-control form-control-big', placeholder => 'Napište název testu...', autofocus => ''}
 					</div>
 					<div class="form-group form-group-password">
-						{label test_password /}
+						{* {label test_password /} *}
+						{label test_password}Heslo: <small>(nepovinné)</small>{/label}
 						{input test_password class => 'form-control form-control-big form-control-password', placeholder => '********'}
 						<button type="button" class="btn-eye"></button>
 					</div>
@@ -59,7 +60,7 @@
 											<i class="fa fa-dot-circle-o" n:if="$key == 'radio'"></i> 
 											<i class="fa fa-check-square-o" n:if="$key == 'checkbox'"></i> 
 											<i class="fa fa-pencil-square-o" n:if="$key == 'text'"></i> 
-											{$label}
+											{$label|noescape}
 										</span>
 									</label>
 								{/foreach}
@@ -82,7 +83,7 @@
 										{label questions-$id-answer_d}Odpověď D: <small>(nepovinné)</small>{/label}
 										{input questions-$id-answer_d class => 'form-control form-answer', onChange=>"formAnswerRadioChanged(this)", data-answer => 'd'}
 									</div>
-									<div class="form-group">
+									<div class="form-group form-group-correct-answer">
 										{label questions-$id-correct_answer /}
 										{input questions-$id-correct_answer class => 'form-control form-correct-answer'}
 									</div>

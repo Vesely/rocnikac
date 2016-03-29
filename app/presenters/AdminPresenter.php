@@ -24,13 +24,27 @@ class AdminPresenter extends BasePresenter
 
 	public function renderDefault()
 	{
-		$this->template->myTests = $this->tests->getTestsByUserId($this->user->id);
+		if($this->user->isInRole('student')){
+			$this->redirect('Test:default');
+		}else{
+			$this->template->myTests = $this->tests->getTestsByUserId($this->user->id);
+			$httpRequest = $this->getHttpRequest();
+			$uri = $httpRequest->getUrl();
+			$this->template->host = $uri->host;
+		}
 	}
 
 	public function renderAttempts($id)
 	{
-		$this->template->test = $this->tests->getTest($id);
-		$this->template->testResults = $this->testResults->getTestResultsByTestId($id);
+		$test = $this->tests->getTest($id);
+		if(empty($test)){
+			// throw new \Exception("Test neexistuje!");
+			$this->flashMessage('Požadovaný test neexistuje!', 'error');
+			$this->redirect('Admin:default');
+		}else{
+			$this->template->test = $this->tests->getTest($id);
+			$this->template->testResults = $this->testResults->getTestResultsByTestId($id);
+		}
 	}
 
 	public function renderClearuploads()

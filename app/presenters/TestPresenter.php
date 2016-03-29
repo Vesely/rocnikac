@@ -27,17 +27,44 @@ class TestPresenter extends BasePresenter
 		$this->template->tests = $this->tests->getTests();
 	}
 
+	public function renderNew()
+	{
+		if($this->user->isInRole('student')){
+			$this->flashMessage('Student nemůže vytvořit vlastní test!');
+			$this->redirect('Test:default');
+		}
+	}
+
 	public function renderTest($id)
 	{
+		$httpRequest = $this->getHttpRequest();
 		if(!empty($id)) {
 			$test = $this->tests->getTest($id);
-			$httpRequest = $this->getHttpRequest();
-			$cookie = $httpRequest->getCookie('test'.$id);
-			if (empty($test->password) || !empty($cookie)) {
-				$this->template->test = $test;
-				$this->template->questions = $this->questions->getQuestionsInTest($id);
-			}else{
-				$this->redirect('Test:unlock', array('id' => $id));
+			if(empty($test)){
+				// throw new \Exception("Test neexistuje!");
+				$this->flashMessage('Požadovaný test neexistuje!', 'error');
+				$this->redirect('Homepage:default');
+			}else{	
+				if($this->user->isLoggedIn()){
+					$myTestAttemps = $this->testResults->getMyTestAttemps($test->id, $this->user->id);
+					
+					$cookie = $httpRequest->getCookie('test'.$id);
+					if (empty($test->password) || !empty($cookie)) {
+						if (!empty($test->attempts)) {
+							//Zkontroluj počet pokusů
+							if($myTestAttemps > $test->attempts) {
+								$this->redirect('Test:tooManyAttempts', array('id' => $id));
+							}
+						}
+						$this->template->test = $test;
+						$this->template->questions = $this->questions->getQuestionsInTest($id);	
+					}else{
+						$this->redirect('Test:unlock', array('id' => $id));
+					}
+				}else{
+					//Uživatel není přihlášený
+					$this->redirect('Sign:default', array('to' => 'test', 'toTest' => $test->id));
+				}
 			}
 		} else {
 			$stop();
@@ -47,7 +74,26 @@ class TestPresenter extends BasePresenter
 	public function renderUnlock($id)
 	{
 		if(!empty($id)) {
-			$this->template->test = $this->tests->getTest($id);
+			$test = $this->tests->getTest($id);
+			$this->template->test = $test;
+			if(empty($test->password)) {
+				$this->redirect('Test:test', array('id' => $test->id));
+			}
+		} else {
+			$this->flashMessage('Test neexistuje!', 'error');
+			$this->redirect('Homepage:default');
+			// $stop();
+		}
+	}
+
+	public function renderTooManyAttempts($id)
+	{
+		if(!empty($id)) {
+			$test = $this->tests->getTest($id);
+			$this->template->test = $test;
+			if(empty($test->attempts)) {
+				$this->redirect('Test:test', array('id' => $test->id));
+			}
 		} else {
 			$this->flashMessage('Test neexistuje!', 'error');
 			$this->redirect('Homepage:default');
@@ -70,10 +116,14 @@ class TestPresenter extends BasePresenter
 	{
 		$user_id = $this->user->id;
 		$result = $this->testResults->getTestResultsByTestIdAndUserId($test_id, $user_id);
-		// $stop();
-		// $json = '{"1":{"isCorrect":false,"questionId":1,"myAnswer":"c","correctAnswer":"b"},"2":{"isCorrect":true,"questionId":2,"myAnswer":"a","correctAnswer":"a"},"3":{"isCorrect":false,"questionId":3,"myAnswer":"b","correctAnswer":"c"}}';
-		$this->template->result = $result;
-		$this->template->answers = json_decode($result->answers);
+		if(!empty($result)) {
+			// $stop();
+			$this->template->result = $result;
+			$this->template->answers = json_decode($result->answers);
+		}else{
+			$this->flashMessage('Výsledky k tomuto testu nelze zobrazit.', 'error');
+			$this->redirect('Homepage:default');
+		}
 	}
 
 
@@ -284,7 +334,7 @@ class TestPresenter extends BasePresenter
 		$form->addText('name', 'Název testu: ')
 			->setRequired('Zadejte prosím název testu.');
 		
-		$attempts = ['Neomezeně', '1', '2', '3', '4', '5', '6'];
+		$attempts = ['Neomezeně', '1', '2', '3', '4', '5', '10', '20'];
 		$form->addSelect('attempts', 'Počet pokusů: ', $attempts);
 
 		$form->addText('test_password', 'Heslo: (nepovinné)');
@@ -294,12 +344,11 @@ class TestPresenter extends BasePresenter
 			$question->addText('question', ($question->name+1).'. Otázka: ');
 			$question->addUpload('question_img', 'Obrázek k otázce:');
 			$question->addHidden('question_img_filename');
-
 			//Answer type
 			$types = array(
-				'radio' => 'Jedna správná odpovědi',
-				'checkbox' => 'Více správných odpovědí',
-				'text' => 'Textová odpověď'
+				'radio' => 'Jedna správná <span class="smhide">odpovědi</span>',
+				'checkbox' => 'Více správných <span class="smhide">odpovědí</span>',
+				'text' => 'Textová <span class="xshide">odpověď</span>'
 				);
 			$question->addRadioList('type', 'Typ odpovědi: ', $types);
 					// ->setDefaultValue('radio');
@@ -335,8 +384,13 @@ class TestPresenter extends BasePresenter
 			$question->addSelect('correct_answer', 'Správná odpověď: ', $correctAnswers);
 
 			//Text answer
-			$question->addText('answer_text', 'Textová odpověď: ');
+			$question->addText('answer_text', 'Přesná textová odpověď: ');
 
+
+			//Pro první otázku (validace)
+			if ($question->name == '0') {
+				$question['question']->setRequired('Vyplňte 1. otázku.');
+			}
 
 			$question->addSubmit('remove', '× Odstranit otázku')
 				->setValidationScope(FALSE) # disables validation
@@ -352,7 +406,7 @@ class TestPresenter extends BasePresenter
 
 
 		$form->addSubmit('submit', 'Vytvořit test')
-			->setValidationScope(FALSE)
+			// ->setValidationScope(FALSE)
 			->onClick[] = array($this, 'newTestFormFormSucceeded');
 
 		// $form->onSuccess[] = array($this, 'newTestFormFormSucceeded');
@@ -388,7 +442,7 @@ class TestPresenter extends BasePresenter
 				$cover = $titleHash.'-'.mt_rand().'.jpg';
 				
 				$image->resize(660, NULL);
-				$image->save('uploads/'.$cover, 100, Image::JPEG);
+				$image->save('uploads/'.$cover, 80, Image::JPEG);
 			   
 			    // $file->move(__DIR__ . '/../../temp/files/' . $imageName);
 			    $filesName = $cover;
