@@ -52,7 +52,7 @@ class TestPresenter extends BasePresenter
 					if (empty($test->password) || !empty($cookie)) {
 						if (!empty($test->attempts)) {
 							//Zkontroluj počet pokusů
-							if($myTestAttemps > $test->attempts) {
+							if($myTestAttemps >= $test->attempts) {
 								$this->redirect('Test:tooManyAttempts', array('id' => $id));
 							}
 						}
@@ -263,6 +263,8 @@ class TestPresenter extends BasePresenter
 				$correctAnswer = $question->correct_answer;
 			}elseif($answerType == 'checkbox') {
 				$correctAnswer = json_decode($question->correct_answers);
+				sort($answer);
+				sort($correctAnswer);
 			}elseif($answerType == 'text') {
 				$correctAnswer = $question->answer_text;
 				//similar_text($question->answer_text, $answer, $percentageTextSimillar);

@@ -9,33 +9,39 @@
 	<meta charset="utf-8">
 	<!--[if ie]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
 
-	<title>{ifset title}{include title|striptags} | {/ifset} Ročníkový projekt</title>
-	<meta name="description" content="Ročníkový projekt - testování">
+	<title>{ifset title}{include title|striptags} | {/ifset} Testujse - online testování znalostí</title>
+	<meta name="description" content="Testujse - online testování znalostí. Nástroj pro vytváření online testů určený pro základní a střední školy.">
+	
 	<link rel="stylesheet" href="{$basePath}/css/main.min.css">
-	<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
-	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
+	{* <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'> *}
+	{* <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'> *}
+	
 	{* <meta name="robots" content="index, follow" /> *}
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="David Veselý" /> 
 
-	<link rel="apple-touch-icon-precomposed" sizes="57x57" href="{$basePath}/favicons/apple-touch-icon-57x57.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$basePath}/favicons/apple-touch-icon-114x114.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$basePath}/favicons/apple-touch-icon-72x72.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="{$basePath}/favicons/apple-touch-icon-144x144.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="{$basePath}/favicons/apple-touch-icon-120x120.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="{$basePath}/favicons/apple-touch-icon-152x152.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="57x57" href="{$basePath}/favicons-bg/apple-touch-icon-57x57.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$basePath}/favicons-bg/apple-touch-icon-114x114.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$basePath}/favicons-bg/apple-touch-icon-72x72.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="{$basePath}/favicons-bg/apple-touch-icon-144x144.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="{$basePath}/favicons-bg/apple-touch-icon-120x120.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="{$basePath}/favicons-bg/apple-touch-icon-152x152.png" />
 	<link rel="icon" type="image/png" href="{$basePath}/favicons/favicon-32x32.png" sizes="32x32" />
 	<link rel="icon" type="image/png" href="{$basePath}/favicons/favicon-16x16.png" sizes="16x16" />
+	<meta name="application-name" content="name" />
 	<meta name="msapplication-TileColor" content="#FFFFFF" />
 	<meta name="msapplication-TileImage" content="{$basePath}/favicons/mstile-144x144.png" />
 	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
 
+	{* Asynchronous Roboto Condensed *}
+	<script type="text/javascript" n:syntax="off"> WebFontConfig = { google: { families: [ 'Roboto+Condensed:400,300,700:latin,latin-ext' ] } };
+	!function(){var t=document.createElement("script");t.src=("https:"==document.location.protocol?"https":"http")+"://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js",t.type="text/javascript",t.async="true";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();</script>
 
 	<!--  Developed by David Veselý -->
 	{block head}{/block}
 </head>
 
-<body>
+<body {ifCurrent Homepage:default}class="body-landing-page"{/ifCurrent}>
 
 	<header class="header">
 		<div class="header-left">{block header-left}{/block}</div>
@@ -83,6 +89,17 @@
 		Projekt vytvořil <a href="http://davidvesely.cz/">David Veselý</a>.
 	</footer>
 
+	{* Asynchronous Font Awesome *}
+	<script type="text/javascript">
+		(function() {
+			var css = document.createElement('link');
+			css.href = '//netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
+			css.rel = 'stylesheet';
+			css.type = 'text/css';
+			document.getElementsByTagName('head')[0].appendChild(css);
+		})();
+	</script>
+	
 	{block scripts}
 	{snippet scripts}
 	{*<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>*}
@@ -96,5 +113,6 @@
 	<script>$.nette.init();</script>
 	{/snippet}
 	{/block}
+
 </body>
 </html>

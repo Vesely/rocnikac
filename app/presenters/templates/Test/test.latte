@@ -1,9 +1,8 @@
-{* {block title}{/block} *}
+{block title}{$test->name}{/block}
 {block content}
 	<div class="test-page">
 		<div class="container">
 			<div class="test-box">
-			
 				<h2>{$test->name}</h2>
 				{if $test->user->id == $user->getIdentity()->id}
 					<a href="#" onClick="window.print();return false" class="btn btn-print">
@@ -106,23 +105,23 @@
 	 
 	    };
 
-	    // $('.shuffle').each(function() {
-	    // 	$(this).find('.radio').shuffle();
-	    // })
-	    
-	    // $('.questions .form-group').shuffle();
+		$('.shuffle').each(function() {
+			$(this).find('.radio, .checkbox').shuffle();
+		})
+
+		$('.questions .form-group').shuffle();
 
 
-		{*// Warning
+		// Warning
 		$(window).on('beforeunload', function(){
-			return "Nedokončil jsi test!! I tak chceš odejít? O.o";
+			return "Váš test nebyl odeslán!";
 		});
 
 		// Form Submit
 		$(document).on("submit", "form", function(event){
 			// disable warning
 			$(window).off('beforeunload');
-		});*}
+		});
 	</script>
 {/block}
 

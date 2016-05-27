@@ -35,6 +35,10 @@ class SignPresenter extends BasePresenter
 		if (($to == 'test') && (!empty($toTest))) {	
 			$httpResponse->setCookie('to', 'test', '2 days');
 			$httpResponse->setCookie('toTest', $toTest, '2 days');
+			$test = $this->tests->getTest($toTest);
+			if($test){
+				$this->template->toTest = $test;
+			}
 		}
 	}
 
@@ -87,6 +91,7 @@ class SignPresenter extends BasePresenter
 			$httpRequest = $form->getPresenter()->getHttpRequest();
 			$httpResponse = $form->getPresenter()->getHttpResponse();
 			$cookie = $httpRequest->getCookie('to');
+			$cookieTest = $httpRequest->getCookie('toTest');
 			
 			if (!empty($cookie)) {
 				if($cookie == 'new'){

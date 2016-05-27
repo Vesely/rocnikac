@@ -1,3 +1,10 @@
+{block title}
+	{ifset $toTest}
+		{$toTest->name}
+	{else}
+		Přihlášení
+	{/ifset}
+{/block}
 {block content}	
 	<div class="sign-page">
 		<div class="container">
